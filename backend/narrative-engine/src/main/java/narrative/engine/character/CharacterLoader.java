@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 @ApplicationScoped
 public class CharacterLoader {
@@ -23,6 +25,30 @@ public class CharacterLoader {
             ObjectMapper objectMapper) {
         this.storagePath = resolveStoragePath(storagePath);
         this.objectMapper = objectMapper;
+    }
+
+    public String resolveKey(String characterKey) {
+        return findKey(characterKey).orElseThrow(() -> new CharacterNotFoundException(characterKey));
+    }
+
+    public Optional<String> findKey(String characterKey) {
+        validateKey(characterKey);
+
+        Path exact = storagePath.resolve(characterKey);
+        if (Files.isRegularFile(exact.resolve("character.json"))) {
+            return Optional.of(folderName(exact, characterKey));
+        }
+
+        try (Stream<Path> stream = Files.list(storagePath)) {
+            return stream
+                    .filter(Files::isDirectory)
+                    .map(path -> path.getFileName().toString())
+                    .filter(name -> name.equalsIgnoreCase(characterKey))
+                    .filter(name -> Files.isRegularFile(storagePath.resolve(name).resolve("character.json")))
+                    .findFirst();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to resolve character " + characterKey, e);
+        }
     }
 
     public JsonNode loadManifest(String characterKey) {
@@ -46,6 +72,10 @@ public class CharacterLoader {
     }
 
     public void create(String characterKey, JsonNode manifest, Map<String, JsonNode> files) {
+        if (findKey(characterKey).isPresent()) {
+            throw new CharacterAlreadyExistsException(characterKey);
+        }
+
         Path dir = characterDirectory(characterKey);
         Path manifestPath = dir.resolve("character.json");
         if (Files.isRegularFile(manifestPath)) {
@@ -85,6 +115,11 @@ public class CharacterLoader {
     }
 
     private Path characterDirectory(String characterKey) {
+        validateKey(characterKey);
+        return storagePath.resolve(characterKey);
+    }
+
+    private void validateKey(String characterKey) {
         if (characterKey == null
                 || characterKey.isBlank()
                 || characterKey.contains("..")
@@ -92,7 +127,18 @@ public class CharacterLoader {
                 || characterKey.indexOf('\\') >= 0) {
             throw new InvalidCharacterRequestException("Invalid character key");
         }
-        return storagePath.resolve(characterKey);
+    }
+
+    private String folderName(Path directory, String fallback) {
+        Path name = directory.getFileName();
+        if (name == null) {
+            return fallback;
+        }
+        try {
+            return directory.toRealPath().getFileName().toString();
+        } catch (IOException e) {
+            return name.toString();
+        }
     }
 
     private Path resolveStoragePath(Path configured) {

@@ -1,5 +1,19 @@
 {
     "canonicalReference": "references/main.jpg",
+    "visualDescription": "Aurora is a beautiful young ice mage in a cinematic fantasy anime-inspired style. She has an elegant but powerful presence and is visually associated with cold, frost, and ice magic.",
+    "faceDescription": "Beautiful youthful female face with delicate features, calm confident expression, and violet eyes.",
+    "hairDescription": "Long flowing silver-white hair.",
+    "eyeDescription": "Bright violet eyes.",
+    "skinDescription": "Fair smooth skin.",
+    "bodyDescription": "Slender athletic feminine build.",
+    "clothingDescription": "Elegant fantasy mage clothing suitable for an adventurer, designed primarily around a cool magical aesthetic with practical movement for combat.",
+    "accessories": [
+      "ice-themed magical accessories",
+      "mage equipment",
+      "subtle adventurer guild insignia"
+    ],
+    "artStyle": "cinematic fantasy, detailed anime-inspired realism, beautiful lighting, high-detail character illustration",
+    "negativePrompt": "different face, different hairstyle, different hair color, blonde hair, black hair, brown hair, different eye color, red eyes, short hair, inconsistent character design, distorted hands, extra fingers, low quality",
 
     "references": [
       {

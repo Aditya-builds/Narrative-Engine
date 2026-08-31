@@ -1,20 +1,19 @@
 {
-    "body": {
-      "heightCm": 175,
-      "weightKg": 62,
-      "build": "tall, slim, athletic"
-    },
-  
-    "measurements": {
-      "chestCm": 0,
-      "waistCm": 0,
-      "hipsCm": 0
-    },
-  
-    "physicalFeatures": {
-      "hair": "...",
-      "eyes": "...",
-      "skin": "...",
-      "face": "..."
-    }
-  }
+  "body" : {
+    "heightCm" : 175,
+    "weightKg" : 62,
+    "build" : "slender athletic build"
+  },
+  "measurements" : {
+    "chestCm" : 0,
+    "waistCm" : 0,
+    "hipsCm" : 0
+  },
+  "physicalFeatures" : {
+    "hair" : "long silver-white hair",
+    "eyes" : "violet eyes",
+    "skin" : "fair skin",
+    "face" : "..."
+  },
+  "description" : "A young woman with long silver-white hair, striking violet eyes, fair skin, and a slender athletic build. Her presence is elegant and composed, with an aura of cold magical power."
+}

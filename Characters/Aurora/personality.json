@@ -1,32 +1,12 @@
 {
-    "traits": [
-      "calm",
-      "reserved",
-      "observant",
-      "confident"
-    ],
-  
-    "likes": [
-      "strong opponents",
-      "quiet environments",
-      "honest people"
-    ],
-  
-    "dislikes": [
-      "cowardice",
-      "dishonesty",
-      "needless cruelty"
-    ],
-  
-    "speech": {
-      "tone": "calm",
-      "style": "restrained",
-      "verbosity": "moderate"
-    },
-  
-    "gestures": [
-      "maintains steady eye contact",
-      "slightly tilts her head when curious",
-      "crosses her arms when skeptical"
-    ]
-  }
+  "traits" : [ "calm", "intelligent", "confident", "reserved", "observant", "independent", "compassionate", "ruthless when necessary" ],
+  "likes" : [ "strong opponents", "quiet environments", "honest people" ],
+  "dislikes" : [ "cowardice", "dishonesty", "needless cruelty" ],
+  "speech" : {
+    "tone" : "calm",
+    "style" : "Calm, measured, and confident. Aurora speaks clearly and rarely wastes words. She maintains a composed tone even in dangerous situations. When someone she trusts is threatened, her normally quiet voice becomes firm and intimidating.",
+    "verbosity" : "moderate"
+  },
+  "gestures" : [ "maintains steady eye contact", "slightly tilts her head when curious", "crosses her arms when skeptical" ],
+  "values" : [ "protects trusted allies", "values loyalty earned through actions", "believes strength should be used responsibly", "values discipline and preparation", "protects innocent people when possible" ]
+}

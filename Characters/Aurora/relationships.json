@@ -1,8 +1,9 @@
 {
-    "relationships": {
-      "laxus": 72,
-      "runa": 64,
-      "erza": 81,
-      "natsu": 55
-    }
+  "relationships" : {
+    "laxus" : 75,
+    "runa" : 64,
+    "erza" : 81,
+    "natsu" : 55,
+    "user" : 35
+  }
 }
