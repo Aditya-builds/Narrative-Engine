@@ -1,0 +1,17 @@
+{
+    "id": "aurora",
+    "name": "Aurora",
+    "rank": "B",
+    "gender": "female",
+    "age": "20",
+  
+    "files": {
+      "stats": "stats.json",
+      "abilities": "abilities.json",
+      "personality": "personality.json",
+      "relationships": "relationships.json",
+      "appearance": "appearance.json",
+      "equipment": "equipment.json",
+      "visualIdentity": "visual-identity.json"
+    }
+  }

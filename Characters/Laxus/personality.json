@@ -1,0 +1,11 @@
+{
+  "traits" : [ "proud", "loyal" ],
+  "likes" : [ ],
+  "dislikes" : [ ],
+  "speech" : {
+    "tone" : "",
+    "style" : "",
+    "verbosity" : ""
+  },
+  "gestures" : [ ]
+}

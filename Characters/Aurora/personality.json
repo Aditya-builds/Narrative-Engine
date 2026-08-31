@@ -1,0 +1,32 @@
+{
+    "traits": [
+      "calm",
+      "reserved",
+      "observant",
+      "confident"
+    ],
+  
+    "likes": [
+      "strong opponents",
+      "quiet environments",
+      "honest people"
+    ],
+  
+    "dislikes": [
+      "cowardice",
+      "dishonesty",
+      "needless cruelty"
+    ],
+  
+    "speech": {
+      "tone": "calm",
+      "style": "restrained",
+      "verbosity": "moderate"
+    },
+  
+    "gestures": [
+      "maintains steady eye contact",
+      "slightly tilts her head when curious",
+      "crosses her arms when skeptical"
+    ]
+  }

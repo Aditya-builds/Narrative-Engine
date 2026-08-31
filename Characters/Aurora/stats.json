@@ -1,0 +1,23 @@
+{
+    "attributes": {
+      "vigor": 70,
+      "mind": 85,
+      "endurance": 55,
+      "strength": 35,
+      "dexterity": 75,
+      "intelligence": 95,
+      "faith": 45,
+      "arcane": 60
+    },
+  
+    "strengths": [
+      "Exceptional ice magic",
+      "High magical intelligence",
+      "Strong battlefield control"
+    ],
+  
+    "weaknesses": [
+      "Low physical strength",
+      "Lower physical durability"
+    ]
+  }

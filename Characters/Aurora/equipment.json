@@ -1,0 +1,11 @@
+{
+    "weapons": [],
+    "armor": [],
+    "accessories": [],
+  
+    "clothing": {
+      "default": "...",
+      "combat": "...",
+      "formal": "..."
+    }
+  }

@@ -1,0 +1,20 @@
+{
+    "body": {
+      "heightCm": 175,
+      "weightKg": 62,
+      "build": "tall, slim, athletic"
+    },
+  
+    "measurements": {
+      "chestCm": 0,
+      "waistCm": 0,
+      "hipsCm": 0
+    },
+  
+    "physicalFeatures": {
+      "hair": "...",
+      "eyes": "...",
+      "skin": "...",
+      "face": "..."
+    }
+  }

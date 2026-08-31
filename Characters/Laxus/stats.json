@@ -1,0 +1,14 @@
+{
+  "attributes" : {
+    "vigor" : 0,
+    "mind" : 0,
+    "endurance" : 0,
+    "strength" : 88,
+    "dexterity" : 0,
+    "intelligence" : 65,
+    "faith" : 0,
+    "arcane" : 0
+  },
+  "strengths" : [ "Lightning magic" ],
+  "weaknesses" : [ ]
+}

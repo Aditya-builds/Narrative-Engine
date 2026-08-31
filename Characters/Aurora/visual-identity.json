@@ -1,0 +1,33 @@
+
+{
+    "canonicalReference": "aurora/reference/main.png",
+  
+    "references": [
+      {
+        "id": "front",
+        "image": "aurora/front.png",
+        "tags": [
+          "front",
+          "neutral"
+        ]
+      },
+  
+      {
+        "id": "three-quarter",
+        "image": "aurora/three-quarter.png",
+        "tags": [
+          "three-quarter",
+          "standing"
+        ]
+      },
+  
+      {
+        "id": "casting",
+        "image": "aurora/casting.png",
+        "tags": [
+          "magic",
+          "action"
+        ]
+      }
+    ]
+  }
