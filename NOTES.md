@@ -1,6 +1,14 @@
-# Character JSON notes
+# Narrative Engine notes
 
 These notes are for the author. They are not character data. Do not put comments inside the `.json` files.
+
+## Architecture
+
+**Version:** my architecture diagram
+
+![my architecture diagram](architecture%20diagram.png)
+
+Each character lives in `Characters/{Name}/`. `character.json` is the hub and points at domain files in the same folder. The backend combines those files on GET, creates an empty copy of this structure on POST, and merges field updates on PUT.
 
 ## character.json
 
@@ -32,4 +40,4 @@ These notes are for the author. They are not character data. Do not put comments
 ## visual-identity.json
 
 - Image paths are relative to this character until an assets root is decided.
-// will add code to have refernce of images that will be used t genrate consistent image for the character
+- These references will be used to generate consistent images for the character.
