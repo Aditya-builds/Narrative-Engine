@@ -15,7 +15,7 @@ Run the backend from `backend/narrative-engine` with `.\mvnw quarkus:dev`. Base 
 | Method | URL | Purpose |
 |---|---|---|
 | GET | `/characters/{name}` | Combined character JSON |
-| POST | `/create_new_character/{name}` | Create folder and empty JSON files |
+| POST | `/create_new_character/{name}/{class}` | Create folder and JSON files from mage or melee defaults |
 | PUT | `/update_character/{name}` | Merge fields into existing JSON |
 
 Authoring notes for the JSON files are in [NOTES.md](NOTES.md).

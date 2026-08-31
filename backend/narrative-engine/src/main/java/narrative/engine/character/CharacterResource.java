@@ -33,9 +33,11 @@ public class CharacterResource {
     }
 
     @POST
-    @Path("/create_new_character/{characterName}")
-    public Response createCharacter(@PathParam("characterName") String characterName) {
-        characterMapper.create(characterName);
+    @Path("/create_new_character/{characterName}/{characterClass}")
+    public Response createCharacter(
+            @PathParam("characterName") String characterName,
+            @PathParam("characterClass") String characterClass) {
+        characterMapper.create(characterName, characterClass);
         return Response.status(Response.Status.CREATED)
                 .entity(Map.of("message", "successful creation"))
                 .build();

@@ -1,0 +1,10 @@
+{
+  "weapons" : [ "training staff" ],
+  "armor" : [ ],
+  "accessories" : [ ],
+  "clothing" : {
+    "default" : "plain robes",
+    "combat" : "battle robes",
+    "formal" : "formal robes"
+  }
+}

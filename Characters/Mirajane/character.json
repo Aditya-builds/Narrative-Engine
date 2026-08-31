@@ -1,0 +1,18 @@
+{
+  "id" : "mirajane",
+  "name" : "Mirajane",
+  "class" : "mage",
+  "rank" : "E",
+  "gender" : "",
+  "age" : "",
+  "description" : "Mirajane is a newly created mage. They fight with intelligence and arcane power, starting at rank E with a training staff and little physical strength.",
+  "files" : {
+    "stats" : "stats.json",
+    "abilities" : "abilities.json",
+    "personality" : "personality.json",
+    "relationships" : "relationships.json",
+    "appearance" : "appearance.json",
+    "equipment" : "equipment.json",
+    "visualIdentity" : "visual-identity.json"
+  }
+}

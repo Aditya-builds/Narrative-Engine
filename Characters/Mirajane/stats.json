@@ -1,0 +1,14 @@
+{
+  "attributes" : {
+    "vigor" : 40,
+    "mind" : 70,
+    "endurance" : 40,
+    "strength" : 25,
+    "dexterity" : 45,
+    "intelligence" : 75,
+    "faith" : 50,
+    "arcane" : 70
+  },
+  "strengths" : [ "Magical aptitude", "Tactical awareness" ],
+  "weaknesses" : [ "Low physical strength", "Limited close-quarters durability" ]
+}

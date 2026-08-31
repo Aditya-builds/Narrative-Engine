@@ -1,0 +1,23 @@
+{
+  "classes" : [ "melee" ],
+  "specialties" : {
+    "martial" : {
+      "offensive" : {
+        "E" : [ ],
+        "D" : [ ],
+        "C" : [ ],
+        "B" : [ ],
+        "A" : [ ],
+        "S" : [ ]
+      },
+      "defensive" : {
+        "E" : [ ],
+        "D" : [ ],
+        "C" : [ ],
+        "B" : [ ],
+        "A" : [ ],
+        "S" : [ ]
+      }
+    }
+  }
+}

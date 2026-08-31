@@ -8,11 +8,26 @@ These notes are for the author. They are not character data. Do not put comments
 
 ![my architecture diagram](architecture%20diagram.png)
 
-Each character lives in `Characters/{Name}/`. `character.json` is the hub and points at domain files in the same folder. The backend combines those files on GET, creates an empty copy of this structure on POST, and merges field updates on PUT.
+Each character lives in `Characters/{Name}/`. `character.json` is the hub and points at domain files in the same folder. The backend combines those files on GET, creates a new character from mage or melee class defaults on POST, and merges field updates on PUT.
+
+## Creating a character
+
+`POST /create_new_character/{name}/{class}` writes a new folder. `{class}` must be `mage` or `melee` (`melle` is accepted as melee).
+
+The starter files are class templates, not copies of Aurora or Laxus:
+
+- `character.json` gets `class`, starting rank `E`, and a class description
+- `stats.json` and `equipment.json` use mage or melee defaults
+- `abilities.json` sets `classes` to the chosen class and empty rank lists under `arcane` (mage) or `martial` (melee)
+- appearance, relationships, and visual identity start empty with the same keys
+
+Do not copy Aurora's ice specialty, appearance, or relationships into a new character.
 
 ## character.json
 
 - `id` is a stable identifier. A unique-id generator will be added later. Until then, set it by hand (example: `"aurora"`).
+- `class` is `mage` or `melee`. New characters get this from the create API.
+- `description` is a short class starter blurb. It can be updated later.
 - `files` maps a domain name to a child filename in the same folder.
 - `visualIdentity` is the map key; the file on disk is `visual-identity.json`.
 

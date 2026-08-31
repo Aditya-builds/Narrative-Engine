@@ -1,0 +1,14 @@
+{
+  "attributes" : {
+    "vigor" : 70,
+    "mind" : 35,
+    "endurance" : 70,
+    "strength" : 75,
+    "dexterity" : 55,
+    "intelligence" : 30,
+    "faith" : 35,
+    "arcane" : 20
+  },
+  "strengths" : [ "Physical power", "Close-quarters combat" ],
+  "weaknesses" : [ "Limited ranged magic", "Lower arcane resistance" ]
+}

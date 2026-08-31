@@ -1,0 +1,18 @@
+{
+  "id" : "erza",
+  "name" : "Erza",
+  "class" : "melee",
+  "rank" : "E",
+  "gender" : "",
+  "age" : "",
+  "description" : "Erza is a newly created melee fighter. They fight up close with strength and endurance, starting at rank E with a training blade and little magical ability.",
+  "files" : {
+    "stats" : "stats.json",
+    "abilities" : "abilities.json",
+    "personality" : "personality.json",
+    "relationships" : "relationships.json",
+    "appearance" : "appearance.json",
+    "equipment" : "equipment.json",
+    "visualIdentity" : "visual-identity.json"
+  }
+}

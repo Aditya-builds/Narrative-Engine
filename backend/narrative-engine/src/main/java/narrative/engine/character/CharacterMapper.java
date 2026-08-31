@@ -2,7 +2,6 @@ package narrative.engine.character;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -14,8 +13,6 @@ import java.util.Map;
 
 @ApplicationScoped
 public class CharacterMapper {
-
-    private static final String TEMPLATE_CHARACTER = "Aurora";
 
     private final CharacterLoader characterLoader;
     private final ObjectMapper objectMapper;
@@ -47,35 +44,16 @@ public class CharacterMapper {
         return combined;
     }
 
-    public void create(String name) {
+    public void create(String name, String className) {
         if (name == null || name.isBlank()) {
             throw new InvalidCharacterRequestException("Provide a unique name");
         }
         name = name.trim();
 
+        CharacterClass characterClass = CharacterClass.from(className);
         String id = name.toLowerCase(Locale.ROOT);
-        JsonNode templateManifest = characterLoader.loadManifest(TEMPLATE_CHARACTER);
-        JsonNode templateFiles = templateManifest.get("files");
-        if (templateFiles == null || !templateFiles.isObject()) {
-            throw new IllegalStateException("Aurora character.json is missing a files object");
-        }
-
-        ObjectNode manifest = objectMapper.createObjectNode();
-        manifest.put("id", id);
-        manifest.put("name", name);
-        manifest.put("rank", "");
-        manifest.put("gender", "");
-        manifest.put("age", "");
-        manifest.set("files", templateFiles.deepCopy());
-
-        Map<String, JsonNode> files = new LinkedHashMap<>();
-        templateFiles.fields().forEachRemaining(entry -> {
-            String fileKey = entry.getKey();
-            String fileName = entry.getValue().asText();
-            JsonNode template = characterLoader.loadFile(TEMPLATE_CHARACTER, fileKey, fileName);
-            files.put(fileName, emptyCopy(fileName, template));
-        });
-
+        ObjectNode manifest = CharacterClassDefaults.manifest(objectMapper, characterClass, id, name);
+        Map<String, JsonNode> files = CharacterClassDefaults.files(objectMapper, characterClass);
         characterLoader.create(name, manifest, files);
     }
 
@@ -99,7 +77,7 @@ public class CharacterMapper {
             throw new InvalidCharacterRequestException("name cannot be changed");
         }
 
-        for (String field : List.of("rank", "gender", "age")) {
+        for (String field : List.of("rank", "gender", "age", "description")) {
             JsonNode value = request.get(field);
             if (value != null && !value.isNull()) {
                 manifest.put(field, value.asText());
@@ -174,46 +152,4 @@ public class CharacterMapper {
         });
     }
 
-    private JsonNode emptyCopy(String fileName, JsonNode template) {
-        if ("relationships.json".equals(fileName)) {
-            ObjectNode relationships = objectMapper.createObjectNode();
-            relationships.putObject("relationships");
-            return relationships;
-        }
-        return emptyValues(template);
-    }
-
-    private JsonNode emptyValues(JsonNode node) {
-        if (node == null || node.isNull()) {
-            return objectMapper.nullNode();
-        }
-        if (node.isObject()) {
-            ObjectNode empty = objectMapper.createObjectNode();
-            node.fields().forEachRemaining(entry -> empty.set(entry.getKey(), emptyValues(entry.getValue())));
-            return empty;
-        }
-        if (node.isArray()) {
-            ArrayNode empty = objectMapper.createArrayNode();
-            boolean objectsOnly = node.size() > 0;
-            for (JsonNode item : node) {
-                if (!item.isObject()) {
-                    objectsOnly = false;
-                    break;
-                }
-            }
-            if (objectsOnly) {
-                for (JsonNode item : node) {
-                    empty.add(emptyValues(item));
-                }
-            }
-            return empty;
-        }
-        if (node.isNumber()) {
-            return objectMapper.getNodeFactory().numberNode(0);
-        }
-        if (node.isBoolean()) {
-            return objectMapper.getNodeFactory().booleanNode(false);
-        }
-        return objectMapper.getNodeFactory().textNode("");
-    }
 }
