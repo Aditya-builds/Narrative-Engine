@@ -1,11 +1,11 @@
 {
-  "traits" : [ "focused", "curious" ],
-  "likes" : [ ],
-  "dislikes" : [ ],
+  "traits" : [ "kind", "motherly", "cheerful", "gentle", "fierce in battle" ],
+  "likes" : [ "cooking", "running the guild bar", "her siblings Elfman and Lisanna" ],
+  "dislikes" : [ "harm to her family", "guildmates taking illegal S-Class jobs", "being called only a model" ],
   "speech" : {
-    "tone" : "measured",
-    "style" : "precise",
+    "tone" : "warm",
+    "style" : "soft",
     "verbosity" : "moderate"
   },
-  "gestures" : [ ]
+  "gestures" : [ "smiles while pouring drinks at the bar", "clasps her hands when worried", "her expression turns sharp when Satan Soul activates" ]
 }

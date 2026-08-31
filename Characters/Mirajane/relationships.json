@@ -1,3 +1,6 @@
 {
-  "relationships" : { }
+  "relationships" : {
+    "erza" : 78,
+    "laxus" : 50
+  }
 }

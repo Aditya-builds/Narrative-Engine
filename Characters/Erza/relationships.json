@@ -1,3 +1,7 @@
 {
-  "relationships" : { }
+  "relationships" : {
+    "laxus" : 58,
+    "mirajane" : 76,
+    "natsu" : 80
+  }
 }

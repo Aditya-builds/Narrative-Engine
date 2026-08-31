@@ -1,14 +1,14 @@
 {
   "attributes" : {
-    "vigor" : 70,
-    "mind" : 35,
-    "endurance" : 70,
-    "strength" : 75,
-    "dexterity" : 55,
-    "intelligence" : 30,
-    "faith" : 35,
-    "arcane" : 20
+    "vigor" : 90,
+    "mind" : 72,
+    "endurance" : 92,
+    "strength" : 95,
+    "dexterity" : 86,
+    "intelligence" : 70,
+    "faith" : 62,
+    "arcane" : 78
   },
-  "strengths" : [ "Physical power", "Close-quarters combat" ],
-  "weaknesses" : [ "Limited ranged magic", "Lower arcane resistance" ]
+  "strengths" : [ "Master swordsmanship", "Requip speed in mid-combat", "Immense physical strength and endurance" ],
+  "weaknesses" : [ "Socially awkward outside battle", "Pushes herself past her limits to protect the guild" ]
 }

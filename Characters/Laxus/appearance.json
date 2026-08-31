@@ -1,8 +1,8 @@
 {
   "body" : {
-    "heightCm" : 0,
-    "weightKg" : 0,
-    "build" : ""
+    "heightCm" : 196,
+    "weightKg" : 108,
+    "build" : "very tall and heavily muscular"
   },
   "measurements" : {
     "chestCm" : 0,
@@ -10,9 +10,9 @@
     "hipsCm" : 0
   },
   "physicalFeatures" : {
-    "hair" : "",
-    "eyes" : "",
-    "skin" : "",
-    "face" : ""
+    "hair" : "blond hair slicked back in spikes, with a tuft on the forehead",
+    "eyes" : "bluish-grey with dark circles; lightning-bolt scar over the right eye",
+    "skin" : "fair, with a tribal tattoo from the left ribs to the shoulder",
+    "face" : "sharp canines; prominent outer eyelashes"
   }
 }

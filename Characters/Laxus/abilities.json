@@ -1,22 +1,22 @@
 {
-  "classes" : [ ],
+  "classes" : [ "mage" ],
   "specialties" : {
-    "ice" : {
+    "lightning" : {
       "offensive" : {
-        "E" : [ ],
-        "D" : [ ],
-        "C" : [ ],
-        "B" : [ ],
-        "A" : [ ],
-        "S" : [ ]
+        "E" : [ "Lightning punch" ],
+        "D" : [ "Lightning Dragon's Iron Fist" ],
+        "C" : [ "Lightning Dragon's Roar" ],
+        "B" : [ "Heavenward Halberd" ],
+        "A" : [ "Thunder Palace" ],
+        "S" : [ "Fairy Law", "Red Lightning Dragon Mode" ]
       },
       "defensive" : {
-        "E" : [ ],
-        "D" : [ ],
-        "C" : [ ],
-        "B" : [ ],
-        "A" : [ ],
-        "S" : [ ]
+        "E" : [ "Static veil" ],
+        "D" : [ "Lightning body spark" ],
+        "C" : [ "Lightning Form" ],
+        "B" : [ "Dragon Slayer scales" ],
+        "A" : [ "Organic Link Magic" ],
+        "S" : [ "Lightning Dragon Force" ]
       }
     }
   }

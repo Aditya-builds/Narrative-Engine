@@ -1,9 +1,9 @@
 {
-  "id" : "laxus",
   "name" : "Laxus",
   "rank" : "S",
   "gender" : "male",
   "age" : "23",
+  "location" : "guildhall",
   "files" : {
     "stats" : "stats.json",
     "abilities" : "abilities.json",
@@ -12,5 +12,7 @@
     "appearance" : "appearance.json",
     "equipment" : "equipment.json",
     "visualIdentity" : "visual-identity.json"
-  }
+  },
+  "class" : "mage",
+  "description" : "Laxus Dreyar, an S-Class Mage of Fairy Tail and grandson of Makarov. A Lightning Dragon Slayer who hides a fierce loyalty to the guild behind a proud, brooding manner."
 }

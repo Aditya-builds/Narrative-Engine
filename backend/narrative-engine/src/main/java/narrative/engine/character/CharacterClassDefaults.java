@@ -28,14 +28,16 @@ final class CharacterClassDefaults {
 
     private CharacterClassDefaults() {}
 
-    static ObjectNode manifest(ObjectMapper mapper, CharacterClass characterClass, String id, String name) {
+    static final String DEFAULT_LOCATION = "guildhall";
+
+    static ObjectNode manifest(ObjectMapper mapper, CharacterClass characterClass, String name) {
         ObjectNode manifest = mapper.createObjectNode();
-        manifest.put("id", id);
         manifest.put("name", name);
         manifest.put("class", characterClass.id());
         manifest.put("rank", "E");
         manifest.put("gender", "");
         manifest.put("age", "");
+        manifest.put("location", DEFAULT_LOCATION);
         manifest.put("description", description(characterClass, name));
 
         ObjectNode files = manifest.putObject("files");

@@ -1,11 +1,11 @@
 {
-  "traits" : [ "disciplined", "direct" ],
-  "likes" : [ ],
-  "dislikes" : [ ],
+  "traits" : [ "strict", "impatient", "loyal", "just", "socially awkward" ],
+  "likes" : [ "cake", "the Fairy Tail guild", "honorable fights" ],
+  "dislikes" : [ "cowardice", "people who ignore her questions", "harm to her guildmates" ],
   "speech" : {
-    "tone" : "plain",
-    "style" : "blunt",
+    "tone" : "commanding",
+    "style" : "direct",
     "verbosity" : "low"
   },
-  "gestures" : [ ]
+  "gestures" : [ "folds her arms when scolding guildmates", "rests a hand on her sword hilt", "knocks heads together to stop guild fights" ]
 }

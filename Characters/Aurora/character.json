@@ -1,10 +1,10 @@
 {
-    "id": "aurora",
     "name": "Aurora",
     "rank": "B",
     "gender": "female",
     "age": "20",
-  
+    "location": "guildhall",
+
     "files": {
       "stats": "stats.json",
       "abilities": "abilities.json",
@@ -14,4 +14,4 @@
       "equipment": "equipment.json",
       "visualIdentity": "visual-identity.json"
     }
-  }
+}

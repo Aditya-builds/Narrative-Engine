@@ -1,10 +1,10 @@
 {
-  "weapons" : [ "training staff" ],
+  "weapons" : [ ],
   "armor" : [ ],
-  "accessories" : [ ],
+  "accessories" : [ "sapphire pendant", "floral wrist wreath" ],
   "clothing" : {
-    "default" : "plain robes",
-    "combat" : "battle robes",
-    "formal" : "formal robes"
+    "default" : "dark red dress with a chest bow, sapphire necklace, and dark red heels",
+    "combat" : "Satan Soul one-piece with scaled arms and tail",
+    "formal" : "Sorcerer Magazine evening wear"
   }
 }

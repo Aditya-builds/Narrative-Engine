@@ -1,14 +1,14 @@
 {
   "attributes" : {
-    "vigor" : 0,
-    "mind" : 0,
-    "endurance" : 0,
-    "strength" : 88,
-    "dexterity" : 0,
-    "intelligence" : 65,
-    "faith" : 0,
-    "arcane" : 0
+    "vigor" : 94,
+    "mind" : 68,
+    "endurance" : 91,
+    "strength" : 93,
+    "dexterity" : 80,
+    "intelligence" : 70,
+    "faith" : 42,
+    "arcane" : 92
   },
-  "strengths" : [ "Lightning magic" ],
-  "weaknesses" : [ ]
+  "strengths" : [ "Lightning Dragon Slayer Magic", "Immense physical power", "High-speed lightning movement" ],
+  "weaknesses" : [ "Pride that isolates him from allies", "Metal can be pulled toward his lightning" ]
 }

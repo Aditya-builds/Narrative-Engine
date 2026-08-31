@@ -3,20 +3,20 @@
   "specialties" : {
     "arcane" : {
       "offensive" : {
-        "E" : [ ],
-        "D" : [ ],
-        "C" : [ ],
-        "B" : [ ],
-        "A" : [ ],
-        "S" : [ ]
+        "E" : [ "Darkness pulse" ],
+        "D" : [ "Suppression Arts" ],
+        "C" : [ "Soul Extinction" ],
+        "B" : [ "Evil Explosion" ],
+        "A" : [ "Satan Soul" ],
+        "S" : [ "Satan Soul: Sitri", "Satan Soul: Halphas" ]
       },
       "defensive" : {
-        "E" : [ ],
-        "D" : [ ],
-        "C" : [ ],
-        "B" : [ ],
-        "A" : [ ],
-        "S" : [ ]
+        "E" : [ "Dark barrier" ],
+        "D" : [ "Demon scales" ],
+        "C" : [ "Dark Deflect" ],
+        "B" : [ "Water Slicer" ],
+        "A" : [ "Satan Soul wings" ],
+        "S" : [ "Alegria" ]
       }
     }
   }

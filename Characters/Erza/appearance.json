@@ -1,8 +1,8 @@
 {
   "body" : {
-    "heightCm" : 0,
-    "weightKg" : 0,
-    "build" : ""
+    "heightCm" : 169,
+    "weightKg" : 49,
+    "build" : "slender, athletic, voluptuous"
   },
   "measurements" : {
     "chestCm" : 0,
@@ -10,9 +10,9 @@
     "hipsCm" : 0
   },
   "physicalFeatures" : {
-    "hair" : "",
-    "eyes" : "",
-    "skin" : "",
-    "face" : ""
+    "hair" : "long scarlet hair",
+    "eyes" : "brown; artificial right eye",
+    "skin" : "fair",
+    "face" : "sharp features with a serious expression; diamond-shaped silver earrings"
   }
 }

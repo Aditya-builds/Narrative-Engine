@@ -1,32 +1,189 @@
-
 {
-    "canonicalReference": "aurora/reference/main.png",
-  
+    "canonicalReference": "references/main.jpg",
+
     "references": [
       {
         "id": "front",
-        "image": "aurora/front.png",
+        "image": "references/pose-01-confident-standing.jpg",
         "tags": [
           "front",
-          "neutral"
+          "standing",
+          "confident",
+          "full-body"
         ]
       },
-  
       {
         "id": "three-quarter",
-        "image": "aurora/three-quarter.png",
+        "image": "references/pose-02-three-quarter.jpg",
         "tags": [
           "three-quarter",
-          "standing"
+          "standing",
+          "full-body"
         ]
       },
-  
+      {
+        "id": "looking-back",
+        "image": "references/pose-03-looking-back.jpg",
+        "tags": [
+          "profile",
+          "standing",
+          "over-shoulder",
+          "full-body"
+        ]
+      },
+      {
+        "id": "profile-pointe",
+        "image": "references/pose-04-profile-pointe.jpg",
+        "tags": [
+          "profile",
+          "standing",
+          "full-body"
+        ]
+      },
+      {
+        "id": "profile",
+        "image": "references/pose-05-profile.jpg",
+        "tags": [
+          "profile",
+          "standing",
+          "full-body"
+        ]
+      },
+      {
+        "id": "back",
+        "image": "references/pose-06-back.jpg",
+        "tags": [
+          "back",
+          "standing",
+          "full-body"
+        ]
+      },
+      {
+        "id": "walking-forward",
+        "image": "references/pose-07-walking-forward.jpg",
+        "tags": [
+          "front",
+          "walking",
+          "full-body"
+        ]
+      },
+      {
+        "id": "walking-away",
+        "image": "references/pose-08-walking-away.jpg",
+        "tags": [
+          "back",
+          "walking",
+          "full-body"
+        ]
+      },
+      {
+        "id": "hand-through-hair",
+        "image": "references/pose-09-hand-through-hair.jpg",
+        "tags": [
+          "front",
+          "standing",
+          "hair"
+        ]
+      },
+      {
+        "id": "hands-behind-back",
+        "image": "references/pose-10-hands-behind-back.jpg",
+        "tags": [
+          "front",
+          "standing",
+          "relaxed"
+        ]
+      },
+      {
+        "id": "sitting-on-steps",
+        "image": "references/pose-11-sitting-on-steps.jpg",
+        "tags": [
+          "sitting",
+          "three-quarter",
+          "full-body"
+        ]
+      },
+      {
+        "id": "sitting-on-throne",
+        "image": "references/pose-12-sitting-on-throne.jpg",
+        "tags": [
+          "sitting",
+          "regal",
+          "full-body"
+        ]
+      },
+      {
+        "id": "kneeling",
+        "image": "references/pose-13-kneeling.jpg",
+        "tags": [
+          "kneeling",
+          "front",
+          "full-body"
+        ]
+      },
+      {
+        "id": "leaning-against-pillar",
+        "image": "references/pose-14-leaning-against-pillar.jpg",
+        "tags": [
+          "standing",
+          "leaning",
+          "relaxed"
+        ]
+      },
+      {
+        "id": "looking-up",
+        "image": "references/pose-15-looking-up.jpg",
+        "tags": [
+          "standing",
+          "looking-up",
+          "serene"
+        ]
+      },
+      {
+        "id": "looking-down",
+        "image": "references/pose-16-looking-down.jpg",
+        "tags": [
+          "standing",
+          "looking-down",
+          "thoughtful"
+        ]
+      },
+      {
+        "id": "reaching-forward",
+        "image": "references/pose-17-reaching-forward.jpg",
+        "tags": [
+          "standing",
+          "reaching",
+          "front"
+        ]
+      },
       {
         "id": "casting",
-        "image": "aurora/casting.png",
+        "image": "references/pose-19-combat-ready.jpg",
         "tags": [
+          "combat",
+          "action",
           "magic",
-          "action"
+          "full-body"
+        ]
+      },
+      {
+        "id": "quiet-resting",
+        "image": "references/pose-20-quiet-resting.jpg",
+        "tags": [
+          "standing",
+          "serene",
+          "eyes-closed"
+        ]
+      },
+      {
+        "id": "portrait",
+        "image": "references/main.jpg",
+        "tags": [
+          "front",
+          "standing",
+          "canonical",
+          "full-body"
         ]
       }
     ]

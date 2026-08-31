@@ -1,10 +1,10 @@
 {
-  "weapons" : [ "training blade" ],
-  "armor" : [ "light training gear" ],
-  "accessories" : [ ],
+  "weapons" : [ "Heart Kreuz sword", "requip sword collection" ],
+  "armor" : [ "Heart Kreuz Armor" ],
+  "accessories" : [ "diamond-shaped silver earrings" ],
   "clothing" : {
-    "default" : "simple tunic",
-    "combat" : "padded combat gear",
-    "formal" : "formal tunic"
+    "default" : "Heart Kreuz armor, blue skirt, and black boots",
+    "combat" : "requipped battle armor",
+    "formal" : "scarlet evening dress"
   }
 }

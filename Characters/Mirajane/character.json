@@ -1,11 +1,11 @@
 {
-  "id" : "mirajane",
   "name" : "Mirajane",
   "class" : "mage",
-  "rank" : "E",
-  "gender" : "",
-  "age" : "",
-  "description" : "Mirajane is a newly created mage. They fight with intelligence and arcane power, starting at rank E with a training staff and little physical strength.",
+  "rank" : "S",
+  "gender" : "female",
+  "age" : "19",
+  "location" : "guildhall",
+  "description" : "Mirajane Strauss, an S-Class Mage of Fairy Tail and the guild's drawing card. A kind barmaid and Sorcerer Magazine model who becomes The Demon in battle through Take Over: Satan Soul.",
   "files" : {
     "stats" : "stats.json",
     "abilities" : "abilities.json",

@@ -8,7 +8,6 @@ import jakarta.inject.Inject;
 
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 @ApplicationScoped
@@ -51,8 +50,7 @@ public class CharacterMapper {
         name = name.trim();
 
         CharacterClass characterClass = CharacterClass.from(className);
-        String id = name.toLowerCase(Locale.ROOT);
-        ObjectNode manifest = CharacterClassDefaults.manifest(objectMapper, characterClass, id, name);
+        ObjectNode manifest = CharacterClassDefaults.manifest(objectMapper, characterClass, name);
         Map<String, JsonNode> files = CharacterClassDefaults.files(objectMapper, characterClass);
         characterLoader.create(name, manifest, files);
     }
@@ -77,7 +75,7 @@ public class CharacterMapper {
             throw new InvalidCharacterRequestException("name cannot be changed");
         }
 
-        for (String field : List.of("rank", "gender", "age", "description")) {
+        for (String field : List.of("rank", "gender", "age", "class", "location", "description")) {
             JsonNode value = request.get(field);
             if (value != null && !value.isNull()) {
                 manifest.put(field, value.asText());
@@ -151,5 +149,4 @@ public class CharacterMapper {
             }
         });
     }
-
 }

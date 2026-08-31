@@ -1,11 +1,11 @@
 {
-  "id" : "erza",
   "name" : "Erza",
   "class" : "melee",
-  "rank" : "E",
-  "gender" : "",
-  "age" : "",
-  "description" : "Erza is a newly created melee fighter. They fight up close with strength and endurance, starting at rank E with a training blade and little magical ability.",
+  "rank" : "S",
+  "gender" : "female",
+  "age" : "19",
+  "location" : "guildhall",
+  "description" : "Erza Scarlet, an S-Class Mage of Fairy Tail known as Titania. A master swordswoman who uses Requip: The Knight to swap over a hundred armors and weapons in battle.",
   "files" : {
     "stats" : "stats.json",
     "abilities" : "abilities.json",

@@ -1,11 +1,11 @@
 {
-  "traits" : [ "proud", "loyal" ],
-  "likes" : [ ],
-  "dislikes" : [ ],
+  "traits" : [ "proud", "loyal", "brooding", "protective", "blunt" ],
+  "likes" : [ "the Fairy Tail guild", "strong opponents", "his Thunder God Tribe" ],
+  "dislikes" : [ "people who mock the guild", "being treated as Makarov's spoiled grandson", "needless cruelty to comrades" ],
   "speech" : {
-    "tone" : "",
-    "style" : "",
-    "verbosity" : ""
+    "tone" : "low",
+    "style" : "blunt",
+    "verbosity" : "low"
   },
-  "gestures" : [ ]
+  "gestures" : [ "smirks with arms folded", "looks away when praised", "crackles lightning in his palm when annoyed" ]
 }

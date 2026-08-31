@@ -1,14 +1,14 @@
 {
   "attributes" : {
-    "vigor" : 40,
-    "mind" : 70,
-    "endurance" : 40,
-    "strength" : 25,
-    "dexterity" : 45,
-    "intelligence" : 75,
-    "faith" : 50,
-    "arcane" : 70
+    "vigor" : 82,
+    "mind" : 78,
+    "endurance" : 84,
+    "strength" : 80,
+    "dexterity" : 74,
+    "intelligence" : 76,
+    "faith" : 55,
+    "arcane" : 94
   },
-  "strengths" : [ "Magical aptitude", "Tactical awareness" ],
-  "weaknesses" : [ "Low physical strength", "Limited close-quarters durability" ]
+  "strengths" : [ "Take Over: Satan Soul", "Enormous magic power", "Demon-form combat strength" ],
+  "weaknesses" : [ "Hesitates to fight unless the guild is threatened", "Past trauma can lock her magic away" ]
 }

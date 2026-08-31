@@ -1,8 +1,8 @@
 {
   "body" : {
-    "heightCm" : 0,
-    "weightKg" : 0,
-    "build" : ""
+    "heightCm" : 163,
+    "weightKg" : 48,
+    "build" : "slim, below-average height, curvy"
   },
   "measurements" : {
     "chestCm" : 0,
@@ -10,9 +10,9 @@
     "hipsCm" : 0
   },
   "physicalFeatures" : {
-    "hair" : "",
-    "eyes" : "",
-    "skin" : "",
-    "face" : ""
+    "hair" : "long white hair curling at the ends, with a short upward ponytail on the forehead",
+    "eyes" : "large blue eyes",
+    "skin" : "fair",
+    "face" : "soft features; white Fairy Tail stamp on the left thigh"
   }
 }

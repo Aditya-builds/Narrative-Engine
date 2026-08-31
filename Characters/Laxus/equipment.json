@@ -1,10 +1,10 @@
 {
   "weapons" : [ ],
   "armor" : [ ],
-  "accessories" : [ ],
+  "accessories" : [ "black Fairy Tail stamp on the left rib cage" ],
   "clothing" : {
-    "default" : "",
-    "combat" : "",
-    "formal" : ""
+    "default" : "dark sleeveless shirt, red pants, and a black fur-trimmed coat over the shoulders",
+    "combat" : "coat off, lightning-charged body",
+    "formal" : "black coat and dark shirt"
   }
 }

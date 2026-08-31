@@ -3,20 +3,20 @@
   "specialties" : {
     "martial" : {
       "offensive" : {
-        "E" : [ ],
-        "D" : [ ],
-        "C" : [ ],
-        "B" : [ ],
-        "A" : [ ],
-        "S" : [ ]
+        "E" : [ "Heart Kreuz slash" ],
+        "D" : [ "Twin swords" ],
+        "C" : [ "Circle Sword" ],
+        "B" : [ "Flame Empress Sword", "Lightning Empress Sword" ],
+        "A" : [ "Nakagami Starlight" ],
+        "S" : [ "Heaven's Wheel", "Clear Heart Clothing" ]
       },
       "defensive" : {
-        "E" : [ ],
-        "D" : [ ],
-        "C" : [ ],
-        "B" : [ ],
-        "A" : [ ],
-        "S" : [ ]
+        "E" : [ "Heart Kreuz Armor" ],
+        "D" : [ "Flight Armor" ],
+        "C" : [ "Sea Empress Armor" ],
+        "B" : [ "Adamantine Armor" ],
+        "A" : [ "Lightning Empress Armor", "Flame Empress Armor" ],
+        "S" : [ "Nakagami Armor" ]
       }
     }
   }
