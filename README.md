@@ -4,9 +4,9 @@ File-based character and persona engine. Each character lives in `World/Characte
 
 ## Architecture
 
-**Version:** v2 architecture
+**Version:** v3 architecture
 
-![v2 architecture](architecture/v2%20arcgitecture.png)
+[v3 architecture](architecture/v3.excalidraw)
 
 ## APIs
 
