@@ -57,3 +57,6 @@ Do not copy Aurora's ice specialty, appearance, or relationships into a new char
 
 - Image paths are relative to this character until an assets root is decided.
 - These references will be used to generate consistent images for the character.
+
+
+first api  tracing search for @get find the file and the line thenn When I receive a GET request matching /characters/{characterKey}, take the value supplied in {characterKey}, store it in a Java String variable called characterKey, pass that value to the map() method of characterMapper, and return whatever map() gives me

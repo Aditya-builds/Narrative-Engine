@@ -11,14 +11,18 @@ import java.util.Map;
 
 public class IsolatedCharacterStorageResource implements QuarkusTestResourceLifecycleManager {
 
-    private Path root;
+    private Path charactersRoot;
+    private Path personasRoot;
 
     @Override
     public Map<String, String> start() {
         try {
             ObjectMapper mapper = new ObjectMapper();
-            root = TestCharacters.newRoot(mapper);
-            return Map.of("character.storage.path", root.toAbsolutePath().toString());
+            charactersRoot = TestCharacters.newRoot(mapper);
+            personasRoot = TestCharacters.newRoot(mapper);
+            return Map.of(
+                    "character.storage.path", charactersRoot.toAbsolutePath().toString(),
+                    "persona.storage.path", personasRoot.toAbsolutePath().toString());
         } catch (IOException e) {
             throw new RuntimeException("Failed to create isolated character storage", e);
         }
@@ -26,6 +30,11 @@ public class IsolatedCharacterStorageResource implements QuarkusTestResourceLife
 
     @Override
     public void stop() {
+        deleteTree(charactersRoot);
+        deleteTree(personasRoot);
+    }
+
+    private static void deleteTree(Path root) {
         if (root == null || !Files.exists(root)) {
             return;
         }

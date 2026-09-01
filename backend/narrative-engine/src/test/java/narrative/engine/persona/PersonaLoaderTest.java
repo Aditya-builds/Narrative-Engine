@@ -1,7 +1,10 @@
-package narrative.engine.character;
+package narrative.engine.persona;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import narrative.engine.character.CharacterClass;
+import narrative.engine.character.CharacterMapper;
+import narrative.engine.character.TestCharacters;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -14,19 +17,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class CharacterLoaderTest {
+class PersonaLoaderTest {
 
     private final ObjectMapper mapper = new ObjectMapper();
 
     @TempDir
     Path root;
 
-    private CharacterLoader loader;
+    private PersonaLoader loader;
 
     @BeforeEach
     void setUp() throws Exception {
         TestCharacters.writeCharacter(root, "Aurora", CharacterClass.MAGE, mapper);
-        loader = TestCharacters.loader(root, mapper);
+        loader = new PersonaLoader(root, mapper);
     }
 
     @Test
@@ -36,17 +39,17 @@ class CharacterLoaderTest {
     }
 
     @Test
-    void resolveKeyMissingCharacter() {
-        assertThrows(CharacterNotFoundException.class, () -> loader.resolveKey("Missing"));
+    void resolveKeyMissingPersona() {
+        assertThrows(PersonaNotFoundException.class, () -> loader.resolveKey("Missing"));
     }
 
     @Test
     void rejectsInvalidKeys() {
-        assertThrows(InvalidCharacterRequestException.class, () -> loader.resolveKey(null));
-        assertThrows(InvalidCharacterRequestException.class, () -> loader.resolveKey("  "));
-        assertThrows(InvalidCharacterRequestException.class, () -> loader.resolveKey("../secret"));
-        assertThrows(InvalidCharacterRequestException.class, () -> loader.resolveKey("a/b"));
-        assertThrows(InvalidCharacterRequestException.class, () -> loader.resolveKey("a\\b"));
+        assertThrows(InvalidPersonaRequestException.class, () -> loader.resolveKey(null));
+        assertThrows(InvalidPersonaRequestException.class, () -> loader.resolveKey("  "));
+        assertThrows(InvalidPersonaRequestException.class, () -> loader.resolveKey("../secret"));
+        assertThrows(InvalidPersonaRequestException.class, () -> loader.resolveKey("a/b"));
+        assertThrows(InvalidPersonaRequestException.class, () -> loader.resolveKey("a\\b"));
     }
 
     @Test
@@ -57,13 +60,13 @@ class CharacterLoaderTest {
 
     @Test
     void loadManifestMissing() {
-        assertThrows(CharacterNotFoundException.class, () -> loader.loadManifest("Ghost"));
+        assertThrows(PersonaNotFoundException.class, () -> loader.loadManifest("Ghost"));
     }
 
     @Test
     void loadFileMissing() throws Exception {
         Files.delete(root.resolve("Aurora").resolve("stats.json"));
-        assertThrows(MissingCharacterFileException.class, () -> loader.loadFile("Aurora", "stats", "stats.json"));
+        assertThrows(MissingPersonaFileException.class, () -> loader.loadFile("Aurora", "stats", "stats.json"));
     }
 
     @Test
@@ -75,17 +78,15 @@ class CharacterLoaderTest {
 
     @Test
     void createWritesClassFiles() {
-        loader.create("Nova", CharacterClassDefaults.manifest(mapper, CharacterClass.MELEE, "Nova"),
-                CharacterClassDefaults.files(mapper, CharacterClass.MELEE));
+        new CharacterMapper(loader, mapper).create("Nova", "melee");
         assertEquals("melee", loader.loadManifest("Nova").path("class").asText());
         assertTrue(Files.isRegularFile(root.resolve("Nova").resolve("equipment.json")));
     }
 
     @Test
     void createRejectsDuplicateIgnoreCase() {
-        ObjectNode manifest = CharacterClassDefaults.manifest(mapper, CharacterClass.MAGE, "aurora");
-        assertThrows(CharacterAlreadyExistsException.class,
-                () -> loader.create("aurora", manifest, CharacterClassDefaults.files(mapper, CharacterClass.MAGE)));
+        ObjectNode manifest = mapper.createObjectNode().put("name", "aurora");
+        assertThrows(PersonaAlreadyExistsException.class, () -> loader.create("aurora", manifest, Map.of()));
     }
 
     @Test
@@ -100,27 +101,25 @@ class CharacterLoaderTest {
     }
 
     @Test
-    void saveMissingCharacter() {
+    void saveMissingPersona() {
         ObjectNode manifest = mapper.createObjectNode().put("name", "Ghost");
-        assertThrows(CharacterNotFoundException.class, () -> loader.save("Ghost", manifest, Map.of()));
+        assertThrows(PersonaNotFoundException.class, () -> loader.save("Ghost", manifest, Map.of()));
     }
 
     @Test
     void saveMissingFile() throws Exception {
         Files.delete(root.resolve("Aurora").resolve("stats.json"));
         ObjectNode manifest = (ObjectNode) loader.loadManifest("Aurora");
-        assertThrows(MissingCharacterFileException.class,
+        assertThrows(MissingPersonaFileException.class,
                 () -> loader.save("Aurora", manifest, Map.of("stats.json", mapper.createObjectNode())));
     }
 
     @Test
     void createWriteFailureWrapsIOException() throws Exception {
         Files.writeString(root.resolve("Blocked"), "not-a-directory");
-        RuntimeException error = assertThrows(RuntimeException.class, () -> loader.create(
-                "Blocked",
-                CharacterClassDefaults.manifest(mapper, CharacterClass.MAGE, "Blocked"),
-                CharacterClassDefaults.files(mapper, CharacterClass.MAGE)));
-        assertTrue(error.getMessage().contains("Failed to create character"));
+        RuntimeException error = assertThrows(RuntimeException.class,
+                () -> loader.create("Blocked", mapper.createObjectNode(), Map.of()));
+        assertTrue(error.getMessage().contains("Failed to create persona"));
     }
 
     @Test
@@ -131,7 +130,7 @@ class CharacterLoaderTest {
             ObjectNode manifest = (ObjectNode) loader.loadManifest("Aurora");
             RuntimeException error = assertThrows(RuntimeException.class,
                     () -> loader.save("Aurora", manifest, Map.of("stats.json", mapper.createObjectNode())));
-            assertTrue(error.getMessage().contains("Failed to update character"));
+            assertTrue(error.getMessage().contains("Failed to update persona"));
         } finally {
             assertTrue(stats.toFile().setWritable(true));
         }
@@ -151,28 +150,38 @@ class CharacterLoaderTest {
 
     @Test
     void findKeyListFailureWhenStorageDeleted() throws Exception {
-        Path other = Files.createTempDirectory("ne-other");
+        Path other = Files.createTempDirectory("ne-persona-other");
         TestCharacters.writeCharacter(other, "Aurora", CharacterClass.MAGE, mapper);
-        CharacterLoader isolated = TestCharacters.loader(other, mapper);
+        PersonaLoader isolated = new PersonaLoader(other, mapper);
         Files.walk(other).sorted((a, b) -> b.getNameCount() - a.getNameCount()).forEach(path -> {
             try {
                 Files.deleteIfExists(path);
             } catch (Exception ignored) {
             }
         });
-        RuntimeException error = assertThrows(RuntimeException.class, () -> isolated.findKey("Someone"));
-        assertTrue(error.getMessage().contains("Failed to resolve character"));
+        assertTrue(isolated.findKey("Someone").isEmpty());
     }
 
     @Test
-    void resolveStoragePathFallsBackToProjectCharacters() {
-        CharacterLoader walked = new CharacterLoader(Path.of("does-not-exist"), mapper);
-        assertEquals("Aurora", walked.resolveKey("Aurora"));
+    void findKeyWhenStorageIsMissingReturnsEmpty() throws Exception {
+        Path missing = Files.createTempDirectory("ne-persona-missing");
+        PersonaLoader isolated = new PersonaLoader(missing, mapper);
+        Files.delete(missing);
+        assertTrue(isolated.findKey("Someone").isEmpty());
+        isolated.create("Nova", mapper.createObjectNode().put("name", "Nova"), Map.of());
+        assertEquals("Nova", isolated.resolveKey("Nova"));
+    }
+
+    @Test
+    void resolveStoragePathFallsBackToProjectPersonas() {
+        PersonaLoader walked = new PersonaLoader(Path.of("does-not-exist"), mapper);
+        assertTrue(Files.isDirectory(walked.storagePath()));
+        assertTrue(walked.storagePath().endsWith(Path.of("World", "Persona")));
     }
 
     @Test
     void resolveStoragePathUsesRelativeConfiguredWhenItIsARoot() {
-        CharacterLoader production = new CharacterLoader(Path.of("../../World/Characters"), mapper);
-        assertEquals("Aurora", production.resolveKey("Aurora"));
+        PersonaLoader production = new PersonaLoader(Path.of("../../World/Persona"), mapper);
+        assertTrue(production.storagePath().endsWith(Path.of("World", "Persona")));
     }
 }

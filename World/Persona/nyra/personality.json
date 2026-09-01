@@ -1,0 +1,11 @@
+{
+  "traits" : [ "focused", "curious" ],
+  "likes" : [ ],
+  "dislikes" : [ ],
+  "speech" : {
+    "tone" : "measured",
+    "style" : "precise",
+    "verbosity" : "moderate"
+  },
+  "gestures" : [ ]
+}

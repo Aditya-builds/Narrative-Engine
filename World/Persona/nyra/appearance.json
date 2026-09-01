@@ -1,0 +1,18 @@
+{
+  "body" : {
+    "heightCm" : 0,
+    "weightKg" : 0,
+    "build" : ""
+  },
+  "measurements" : {
+    "chestCm" : 0,
+    "waistCm" : 0,
+    "hipsCm" : 0
+  },
+  "physicalFeatures" : {
+    "hair" : "",
+    "eyes" : "",
+    "skin" : "",
+    "face" : ""
+  }
+}

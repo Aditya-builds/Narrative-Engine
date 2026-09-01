@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import narrative.engine.world.EntityStore;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -17,18 +18,22 @@ import java.util.Set;
 @ApplicationScoped
 public class CharacterMapper {
 
-    private final CharacterLoader characterLoader;
+    private final EntityStore entityStore;
     private final ObjectMapper objectMapper;
 
-    @Inject
-    public CharacterMapper(CharacterLoader characterLoader, ObjectMapper objectMapper) {
-        this.characterLoader = characterLoader;
+    public CharacterMapper(EntityStore entityStore, ObjectMapper objectMapper) {
+        this.entityStore = entityStore;
         this.objectMapper = objectMapper;
     }
 
+    @Inject
+    public CharacterMapper(CharacterLoader characterLoader, ObjectMapper objectMapper) {
+        this((EntityStore) characterLoader, objectMapper);
+    }
+
     public ObjectNode map(String characterKey) {
-        String directory = characterLoader.resolveKey(characterKey);
-        JsonNode manifest = characterLoader.loadManifest(directory);
+        String directory = entityStore.resolveKey(characterKey);
+        JsonNode manifest = entityStore.loadManifest(directory);
         if (!manifest.isObject()) {
             throw new IllegalStateException("character.json for '" + characterKey + "' must be a JSON object");
         }
@@ -57,7 +62,7 @@ public class CharacterMapper {
         CharacterClass characterClass = CharacterClass.from(className);
         ObjectNode manifest = CharacterClassDefaults.manifest(objectMapper, characterClass, name);
         Map<String, JsonNode> files = CharacterClassDefaults.files(objectMapper, characterClass);
-        characterLoader.create(name, manifest, files);
+        entityStore.create(name, manifest, files);
     }
 
     public void update(String name, JsonNode request) {
@@ -68,8 +73,8 @@ public class CharacterMapper {
             throw new InvalidCharacterRequestException("Request body must be a JSON object");
         }
 
-        final String characterName = characterLoader.resolveKey(name.trim());
-        JsonNode manifestNode = characterLoader.loadManifest(characterName);
+        final String characterName = entityStore.resolveKey(name.trim());
+        JsonNode manifestNode = entityStore.loadManifest(characterName);
         if (!manifestNode.isObject()) {
             throw new IllegalStateException("character.json for '" + characterName + "' must be a JSON object");
         }
@@ -114,7 +119,7 @@ public class CharacterMapper {
             if (fileKey == null) {
                 throw new InvalidCharacterRequestException("Unknown file '" + fileName + "'");
             }
-            JsonNode current = characterLoader.loadFile(characterName, fileKey, fileName);
+            JsonNode current = entityStore.loadFile(characterName, fileKey, fileName);
             if (!current.isObject()) {
                 throw new IllegalStateException(fileName + " for '" + characterName + "' must be a JSON object");
             }
@@ -123,7 +128,7 @@ public class CharacterMapper {
             updatedFiles.put(fileName, merged);
         }
 
-        characterLoader.save(characterName, manifest, updatedFiles);
+        entityStore.save(characterName, manifest, updatedFiles);
     }
 
     private static final List<String> MANIFEST_TEXT_FIELDS =
@@ -325,7 +330,7 @@ public class CharacterMapper {
         if (fileName == null) {
             return null;
         }
-        JsonNode current = characterLoader.loadFile(characterName, "abilities", fileName);
+        JsonNode current = entityStore.loadFile(characterName, "abilities", fileName);
         String specialty = specialtyKey(current);
         String rank = normalizeRank(manifest.path("rank").asText("E"));
         String highRank = nextRank(rank);
@@ -500,7 +505,7 @@ public class CharacterMapper {
         }
 
         String fileName = fileNameNode.asText();
-        filesByName.set(fileName, characterLoader.loadFile(characterKey, fileKey, fileName));
+        filesByName.set(fileName, entityStore.loadFile(characterKey, fileKey, fileName));
     }
 
     private void merge(ObjectNode target, JsonNode source) {

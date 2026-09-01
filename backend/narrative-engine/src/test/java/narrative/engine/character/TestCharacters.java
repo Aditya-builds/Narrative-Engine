@@ -9,7 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
 
-final class TestCharacters {
+public final class TestCharacters {
 
     private TestCharacters() {}
 
@@ -19,7 +19,7 @@ final class TestCharacters {
         return root;
     }
 
-    static void writeCharacter(Path root, String name, CharacterClass characterClass, ObjectMapper mapper)
+    public static void writeCharacter(Path root, String name, CharacterClass characterClass, ObjectMapper mapper)
             throws IOException {
         Path dir = root.resolve(name);
         Files.createDirectories(dir);

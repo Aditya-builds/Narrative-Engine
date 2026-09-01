@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import narrative.engine.world.EntityStore;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.io.IOException;
@@ -14,7 +15,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 @ApplicationScoped
-public class CharacterLoader {
+public class CharacterLoader implements EntityStore {
 
     private final Path storagePath;
     private final ObjectMapper objectMapper;
@@ -149,6 +150,10 @@ public class CharacterLoader {
 
         Path dir = Path.of("").toAbsolutePath().normalize();
         while (dir != null) {
+            Path worldCharacters = dir.resolve("World").resolve("Characters");
+            if (isCharacterRoot(worldCharacters)) {
+                return worldCharacters;
+            }
             Path characters = dir.resolve("Characters");
             if (isCharacterRoot(characters)) {
                 return characters;
@@ -161,7 +166,7 @@ public class CharacterLoader {
         }
 
         throw new IllegalStateException(
-                "Could not find Characters folder (looked from "
+                "Could not find World/Characters folder (looked from "
                         + Path.of("").toAbsolutePath().normalize()
                         + " using "
                         + configured
