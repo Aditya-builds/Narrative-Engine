@@ -6,7 +6,7 @@ File-based character and persona engine. Each character lives in `World/Characte
 
 **Version:** v3 architecture
 
-[v3 architecture](architecture/v3.excalidraw)
+![v3 architecture](architecture/v3.jpg)
 
 ## APIs
 
