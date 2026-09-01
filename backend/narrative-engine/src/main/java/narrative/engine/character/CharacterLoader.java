@@ -197,8 +197,16 @@ public class CharacterLoader implements EntityStore {
     }
 
     private boolean isCharacterRoot(Path path) {
-        return Files.isDirectory(path)
-                && Files.isRegularFile(path.resolve("Aurora").resolve("character.json"));
+        if (!Files.isDirectory(path)) {
+            return false;
+        }
+        try (Stream<Path> children = Files.list(path)) {
+            return children
+                    .filter(Files::isDirectory)
+                    .anyMatch(child -> Files.isRegularFile(child.resolve("character.json")));
+        } catch (IOException e) {
+            return false;
+        }
     }
 
     private JsonNode readJson(Path file, String errorMessage) {

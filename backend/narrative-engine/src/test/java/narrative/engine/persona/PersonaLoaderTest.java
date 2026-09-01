@@ -190,6 +190,7 @@ class PersonaLoaderTest {
     void resolveStoragePathUsesRelativeConfiguredWhenItIsARoot() {
         PersonaLoader production = new PersonaLoader(Path.of("../../World/Persona"), mapper);
         assertTrue(production.storagePath().endsWith(Path.of("World", "Persona")));
+        assertEquals("Aurora", production.resolveKey("Aurora"));
     }
 
     @Test

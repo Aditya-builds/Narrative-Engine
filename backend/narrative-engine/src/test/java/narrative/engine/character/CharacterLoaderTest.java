@@ -173,13 +173,20 @@ class CharacterLoaderTest {
     @Test
     void resolveStoragePathFallsBackToProjectCharacters() {
         CharacterLoader walked = new CharacterLoader(Path.of("does-not-exist"), mapper);
-        assertEquals("Aurora", walked.resolveKey("Aurora"));
+        assertEquals("Erza", walked.resolveKey("Erza"));
+    }
+
+    @Test
+    void emptyDirectoryIsNotACharacterRoot() throws Exception {
+        Path empty = Files.createTempDirectory("ne-empty-characters");
+        CharacterLoader walked = new CharacterLoader(empty, mapper);
+        assertEquals("Erza", walked.resolveKey("Erza"));
     }
 
     @Test
     void resolveStoragePathUsesRelativeConfiguredWhenItIsARoot() {
         CharacterLoader production = new CharacterLoader(Path.of("../../World/Characters"), mapper);
-        assertEquals("Aurora", production.resolveKey("Aurora"));
+        assertEquals("Erza", production.resolveKey("Erza"));
     }
 
     @Test
