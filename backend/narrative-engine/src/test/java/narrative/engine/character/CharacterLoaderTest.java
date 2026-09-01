@@ -8,6 +8,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -27,6 +28,11 @@ class CharacterLoaderTest {
     void setUp() throws Exception {
         TestCharacters.writeCharacter(root, "Aurora", CharacterClass.MAGE, mapper);
         loader = TestCharacters.loader(root, mapper);
+    }
+
+    @Test
+    void listNamesIncludesAurora() {
+        assertEquals(List.of("Aurora"), loader.listKeys());
     }
 
     @Test
@@ -174,5 +180,23 @@ class CharacterLoaderTest {
     void resolveStoragePathUsesRelativeConfiguredWhenItIsARoot() {
         CharacterLoader production = new CharacterLoader(Path.of("../../World/Characters"), mapper);
         assertEquals("Aurora", production.resolveKey("Aurora"));
+    }
+
+    @Test
+    void findPortraitUsesCanonicalReferenceThenFallback() throws Exception {
+        assertTrue(loader.findPortrait("Aurora").isEmpty());
+
+        Path face = root.resolve("Aurora").resolve("face.png");
+        Files.write(face, new byte[] {1, 2, 3});
+        Files.writeString(root.resolve("Aurora").resolve("visual-identity.json"),
+                "{\"canonicalReference\":\"face.png\"}");
+        assertEquals(face.toAbsolutePath().normalize(), loader.findPortrait("aurora").orElseThrow());
+
+        Files.writeString(root.resolve("Aurora").resolve("visual-identity.json"),
+                "{\"canonicalReference\":\"\"}");
+        Path fallback = root.resolve("Aurora").resolve("references").resolve("main.jpg");
+        Files.createDirectories(fallback.getParent());
+        Files.write(fallback, new byte[] {4, 5, 6});
+        assertEquals(fallback.toAbsolutePath().normalize(), loader.findPortrait("Aurora").orElseThrow());
     }
 }

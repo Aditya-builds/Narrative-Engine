@@ -53,6 +53,10 @@ public class CharacterMapper {
         return combined;
     }
 
+    public List<String> listNames() {
+        return entityStore.listKeys();
+    }
+
     public void create(String name, String className) {
         if (name == null || name.isBlank()) {
             throw new InvalidCharacterRequestException("Provide a unique name");

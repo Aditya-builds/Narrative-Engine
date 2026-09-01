@@ -3,17 +3,35 @@ package narrative.engine.persona;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
+import jakarta.inject.Inject;
 import narrative.engine.character.IsolatedCharacterStorageResource;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.Test;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItem;
 
 @QuarkusTest
 @QuarkusTestResource(IsolatedCharacterStorageResource.class)
 class PersonaResourceTest {
+
+    @Inject
+    @ConfigProperty(name = "persona.storage.path")
+    Path personaStorage;
+
+    @Test
+    void listPersonasIncludesAurora() {
+        given()
+                .when().get("/personas")
+                .then()
+                .statusCode(200)
+                .body("$", hasItem("Aurora"));
+    }
 
     @Test
     void getExistingPersona() {
@@ -241,6 +259,25 @@ class PersonaResourceTest {
                 .when().get("/characters/{name}", name)
                 .then()
                 .statusCode(404);
+    }
+
+    @Test
+    void portraitIsNotFoundUntilAnImageExists() throws Exception {
+        given()
+                .when().get("/personas/Aurora/portrait")
+                .then()
+                .statusCode(404);
+
+        Path image = personaStorage.resolve("Aurora").resolve("references").resolve("main.jpg");
+        Files.createDirectories(image.getParent());
+        Files.write(image, new byte[] {(byte) 0xFF, (byte) 0xD8, (byte) 0xFF, (byte) 0xD9});
+
+        given()
+                .accept("*/*")
+                .when().get("/personas/aurora/portrait")
+                .then()
+                .statusCode(200)
+                .contentType("image/jpeg");
     }
 
     private static String unique(String prefix) {

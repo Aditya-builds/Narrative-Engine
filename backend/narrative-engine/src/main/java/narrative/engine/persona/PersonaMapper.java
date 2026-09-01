@@ -7,6 +7,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import narrative.engine.character.CharacterMapper;
 
+import java.util.List;
+
 @ApplicationScoped
 public class PersonaMapper {
 
@@ -19,6 +21,10 @@ public class PersonaMapper {
 
     public ObjectNode map(String personaKey) {
         return characterMapper.map(personaKey);
+    }
+
+    public List<String> listNames() {
+        return characterMapper.listNames();
     }
 
     public void create(String name, String className) {

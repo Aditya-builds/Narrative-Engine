@@ -10,6 +10,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -31,6 +32,11 @@ class CharacterMapperTest {
         TestCharacters.writeCharacter(root, "Aurora", CharacterClass.MAGE, objectMapper);
         loader = TestCharacters.loader(root, objectMapper);
         mapper = TestCharacters.mapper(root, objectMapper);
+    }
+
+    @Test
+    void listNamesIncludesAurora() {
+        assertEquals(List.of("Aurora"), mapper.listNames());
     }
 
     @Test

@@ -1,0 +1,24 @@
+<section class="page">
+  <div class="page-head">
+    <div class="page-copy">
+      <p class="eyebrow">Step 1</p>
+      <h1>Who will you speak with?</h1>
+      <p class="lede">Hover a character to learn more, then click to talk. Create a new one anytime.</p>
+    </div>
+    <a class="btn primary" routerLink="/characters/new">Create character</a>
+  </div>
+
+  @if (error()) {
+    <p class="banner">{{ error() }}</p>
+  }
+
+  <div class="cast-grid">
+    @for (character of characters(); track character.name) {
+      <app-entity-card
+        kind="character"
+        [entity]="character"
+        actionLabel="Talk to {{ character.name }}"
+        (choose)="talk($event)" />
+    }
+  </div>
+</section>

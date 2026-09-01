@@ -1,0 +1,75 @@
+<div class="im">
+  <header class="im-top">
+    <a class="im-icon-btn" [routerLink]="['/characters', character()?.name, 'personas']" aria-label="Back">
+      ←
+    </a>
+    <div class="im-peer">
+      @if (character()?.name; as name) {
+        <app-portrait class="im-avatar" kind="character" [name]="name" size="avatar" />
+      }
+      <div>
+        <strong>{{ character()?.name || 'Character' }}</strong>
+        <small>{{ character()?.class }} · rank {{ character()?.rank || '?' }}</small>
+      </div>
+    </div>
+    <button type="button" class="im-icon-btn" (click)="showProfile.set(!showProfile())" aria-label="Profile">
+      i
+    </button>
+  </header>
+
+  @if (error()) {
+    <p class="banner im-banner">{{ error() }}</p>
+  }
+
+  <div class="im-thread" #thread>
+    <p class="im-day">Today</p>
+    @for (message of messages(); track $index) {
+      <div class="im-row" [class.im-row-mine]="message.speaker === 'persona'">
+        @if (message.speaker === 'character') {
+          <app-portrait class="im-avatar" kind="character" [name]="message.name" size="avatar" />
+        }
+        <div class="im-bubble" [class.im-bubble-mine]="message.speaker === 'persona'">
+          <p>{{ message.text }}</p>
+          <time>{{ clock(message.at) }}</time>
+        </div>
+        @if (message.speaker === 'persona') {
+          <app-portrait class="im-avatar" kind="persona" [name]="message.name" size="avatar" />
+        }
+      </div>
+    }
+  </div>
+
+  <form class="im-dock" (ngSubmit)="send()">
+    <textarea
+      name="draft"
+      rows="1"
+      [(ngModel)]="draft"
+      (keydown)="onComposerKey($event)"
+      [placeholder]="'Message as ' + (persona()?.name || 'you')"
+    ></textarea>
+    <button type="submit" class="im-send" [disabled]="!draft.trim()">Send</button>
+  </form>
+</div>
+
+@if (showProfile()) {
+  <div class="im-sheet-mask" (click)="showProfile.set(false)"></div>
+  <aside class="im-sheet">
+    <header>
+      <h2>{{ character()?.name }}</h2>
+      <button type="button" class="im-icon-btn" (click)="showProfile.set(false)">×</button>
+    </header>
+    @if (character()?.name; as name) {
+      <app-portrait kind="character" [name]="name" size="detail" />
+    }
+    <p class="lede">You are chatting as {{ persona()?.name }}.</p>
+    <label>
+      <span>{{ character()?.name }} description</span>
+      <textarea rows="6" [(ngModel)]="characterNotes"></textarea>
+    </label>
+    <label>
+      <span>{{ persona()?.name }} description</span>
+      <textarea rows="6" [(ngModel)]="personaNotes"></textarea>
+    </label>
+    <button type="button" class="btn primary" [disabled]="busy()" (click)="saveNotes()">Save</button>
+  </aside>
+}

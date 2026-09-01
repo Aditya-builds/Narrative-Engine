@@ -1,0 +1,185 @@
+<section class="page editor-page">
+  <div class="page-copy">
+    <p class="eyebrow">{{ kind() === 'persona' ? 'New persona' : 'New character' }}</p>
+    <h1>{{ title }}</h1>
+    <p class="lede">
+      Mage and melee defaults are already filled in. Change anything you want, then save.
+    </p>
+    <a class="back" [routerLink]="backLink">Cancel</a>
+  </div>
+
+  @if (error()) {
+    <p class="banner">{{ error() }}</p>
+  }
+
+  <form class="editor" (ngSubmit)="save()">
+    <section class="form-section">
+      <h2>Identity</h2>
+      <div class="form-grid">
+        <label>
+          <span>Name</span>
+          <input name="name" required [(ngModel)]="draft.name" (ngModelChange)="onNameChange()" />
+        </label>
+        <label>
+          <span>Class</span>
+          <select name="class" [(ngModel)]="draft.class" (ngModelChange)="onClassChange($event)">
+            <option value="mage">mage</option>
+            <option value="melee">melee</option>
+          </select>
+        </label>
+        <label>
+          <span>Rank</span>
+          <select name="rank" [(ngModel)]="draft.rank">
+            <option>E</option>
+            <option>D</option>
+            <option>C</option>
+            <option>B</option>
+            <option>A</option>
+            <option>S</option>
+          </select>
+        </label>
+        <label>
+          <span>Gender</span>
+          <input name="gender" [(ngModel)]="draft.gender" />
+        </label>
+        <label>
+          <span>Age</span>
+          <input name="age" [(ngModel)]="draft.age" />
+        </label>
+        <label>
+          <span>Location</span>
+          <input name="location" [(ngModel)]="draft.location" />
+        </label>
+      </div>
+      <label>
+        <span>Description</span>
+        <textarea name="description" rows="4" [(ngModel)]="draft.description"></textarea>
+      </label>
+      <label>
+        <span>Opening line</span>
+        <textarea name="openingMessage" rows="3" [(ngModel)]="draft.openingMessage"></textarea>
+      </label>
+    </section>
+
+    <section class="form-section">
+      <h2>Personality</h2>
+      <div class="form-grid">
+        <label>
+          <span>Traits</span>
+          <input name="traits" [(ngModel)]="draft.traits" />
+        </label>
+        <label>
+          <span>Likes</span>
+          <input name="likes" [(ngModel)]="draft.likes" />
+        </label>
+        <label>
+          <span>Dislikes</span>
+          <input name="dislikes" [(ngModel)]="draft.dislikes" />
+        </label>
+        <label>
+          <span>Speech tone</span>
+          <input name="speechTone" [(ngModel)]="draft.speechTone" />
+        </label>
+        <label>
+          <span>Speech style</span>
+          <input name="speechStyle" [(ngModel)]="draft.speechStyle" />
+        </label>
+        <label>
+          <span>Verbosity</span>
+          <input name="speechVerbosity" [(ngModel)]="draft.speechVerbosity" />
+        </label>
+      </div>
+    </section>
+
+    <section class="form-section">
+      <h2>Appearance</h2>
+      <div class="form-grid">
+        <label>
+          <span>Height (cm)</span>
+          <input type="number" name="heightCm" [(ngModel)]="draft.heightCm" />
+        </label>
+        <label>
+          <span>Weight (kg)</span>
+          <input type="number" name="weightKg" [(ngModel)]="draft.weightKg" />
+        </label>
+        <label>
+          <span>Build</span>
+          <input name="build" [(ngModel)]="draft.build" />
+        </label>
+        <label>
+          <span>Hair</span>
+          <input name="hair" [(ngModel)]="draft.hair" />
+        </label>
+        <label>
+          <span>Eyes</span>
+          <input name="eyes" [(ngModel)]="draft.eyes" />
+        </label>
+        <label>
+          <span>Skin</span>
+          <input name="skin" [(ngModel)]="draft.skin" />
+        </label>
+        <label>
+          <span>Face</span>
+          <input name="face" [(ngModel)]="draft.face" />
+        </label>
+      </div>
+    </section>
+
+    <section class="form-section">
+      <h2>Stats</h2>
+      <div class="form-grid stats-grid">
+        <label><span>Vigor</span><input type="number" name="vigor" [(ngModel)]="draft.vigor" /></label>
+        <label><span>Mind</span><input type="number" name="mind" [(ngModel)]="draft.mind" /></label>
+        <label><span>Endurance</span><input type="number" name="endurance" [(ngModel)]="draft.endurance" /></label>
+        <label><span>Strength</span><input type="number" name="strength" [(ngModel)]="draft.strength" /></label>
+        <label><span>Dexterity</span><input type="number" name="dexterity" [(ngModel)]="draft.dexterity" /></label>
+        <label><span>Intelligence</span><input type="number" name="intelligence" [(ngModel)]="draft.intelligence" /></label>
+        <label><span>Faith</span><input type="number" name="faith" [(ngModel)]="draft.faith" /></label>
+        <label><span>Arcane</span><input type="number" name="arcane" [(ngModel)]="draft.arcane" /></label>
+      </div>
+      <div class="form-grid">
+        <label>
+          <span>Strengths</span>
+          <input name="strengths" [(ngModel)]="draft.strengths" />
+        </label>
+        <label>
+          <span>Weaknesses</span>
+          <input name="weaknesses" [(ngModel)]="draft.weaknesses" />
+        </label>
+      </div>
+    </section>
+
+    <section class="form-section">
+      <h2>Equipment</h2>
+      <div class="form-grid">
+        <label>
+          <span>Weapons</span>
+          <input name="weapons" [(ngModel)]="draft.weapons" />
+        </label>
+        <label>
+          <span>Armor</span>
+          <input name="armor" [(ngModel)]="draft.armor" />
+        </label>
+        <label>
+          <span>Default clothes</span>
+          <input name="clothingDefault" [(ngModel)]="draft.clothingDefault" />
+        </label>
+        <label>
+          <span>Combat clothes</span>
+          <input name="clothingCombat" [(ngModel)]="draft.clothingCombat" />
+        </label>
+        <label>
+          <span>Formal clothes</span>
+          <input name="clothingFormal" [(ngModel)]="draft.clothingFormal" />
+        </label>
+      </div>
+    </section>
+
+    <div class="editor-actions">
+      <a class="btn" [routerLink]="backLink">Cancel</a>
+      <button type="submit" class="btn primary" [disabled]="busy()">
+        {{ busy() ? 'Saving…' : 'Save ' + kind() }}
+      </button>
+    </div>
+  </form>
+</section>

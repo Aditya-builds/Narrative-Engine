@@ -12,7 +12,9 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import narrative.engine.world.Portraits;
 
+import java.util.List;
 import java.util.Map;
 
 @Path("/")
@@ -20,10 +22,25 @@ import java.util.Map;
 public class CharacterResource {
 
     private final CharacterMapper characterMapper;
+    private final CharacterLoader characterLoader;
 
     @Inject
-    public CharacterResource(CharacterMapper characterMapper) {
+    public CharacterResource(CharacterMapper characterMapper, CharacterLoader characterLoader) {
         this.characterMapper = characterMapper;
+        this.characterLoader = characterLoader;
+    }
+
+    @GET
+    @Path("/characters")
+    public List<String> listCharacters() {
+        return characterMapper.listNames();
+    }
+
+    @GET
+    @Path("/characters/{characterKey}/portrait")
+    @Produces({"image/jpeg", "image/png", "image/webp", "image/gif", MediaType.WILDCARD})
+    public Response getPortrait(@PathParam("characterKey") String characterKey) {
+        return Portraits.response(characterLoader.findPortrait(characterKey));
     }
 
     @GET

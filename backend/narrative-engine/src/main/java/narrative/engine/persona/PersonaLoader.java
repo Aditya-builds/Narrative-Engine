@@ -5,11 +5,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import narrative.engine.world.EntityStore;
+import narrative.engine.world.Portraits;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -30,6 +32,22 @@ public class PersonaLoader implements EntityStore {
 
     public String resolveKey(String personaKey) {
         return findKey(personaKey).orElseThrow(() -> new PersonaNotFoundException(personaKey));
+    }
+
+    public List<String> listKeys() {
+        if (!Files.isDirectory(storagePath)) {
+            return List.of();
+        }
+        try (Stream<Path> stream = Files.list(storagePath)) {
+            return stream
+                    .filter(Files::isDirectory)
+                    .map(path -> path.getFileName().toString())
+                    .filter(name -> Files.isRegularFile(storagePath.resolve(name).resolve("character.json")))
+                    .sorted(String.CASE_INSENSITIVE_ORDER)
+                    .toList();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to list personas", e);
+        }
     }
 
     public Optional<String> findKey(String personaKey) {
@@ -117,6 +135,11 @@ public class PersonaLoader implements EntityStore {
         } catch (IOException e) {
             throw new RuntimeException("Failed to update persona " + personaKey, e);
         }
+    }
+
+    public Optional<Path> findPortrait(String personaKey) {
+        String directory = resolveKey(personaKey);
+        return Portraits.find(personaDirectory(directory));
     }
 
     Path storagePath() {

@@ -12,7 +12,9 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import narrative.engine.world.Portraits;
 
+import java.util.List;
 import java.util.Map;
 
 @Path("/")
@@ -20,10 +22,25 @@ import java.util.Map;
 public class PersonaResource {
 
     private final PersonaMapper personaMapper;
+    private final PersonaLoader personaLoader;
 
     @Inject
-    public PersonaResource(PersonaMapper personaMapper) {
+    public PersonaResource(PersonaMapper personaMapper, PersonaLoader personaLoader) {
         this.personaMapper = personaMapper;
+        this.personaLoader = personaLoader;
+    }
+
+    @GET
+    @Path("/personas")
+    public List<String> listPersonas() {
+        return personaMapper.listNames();
+    }
+
+    @GET
+    @Path("/personas/{personaKey}/portrait")
+    @Produces({"image/jpeg", "image/png", "image/webp", "image/gif", MediaType.WILDCARD})
+    public Response getPortrait(@PathParam("personaKey") String personaKey) {
+        return Portraits.response(personaLoader.findPortrait(personaKey));
     }
 
     @GET

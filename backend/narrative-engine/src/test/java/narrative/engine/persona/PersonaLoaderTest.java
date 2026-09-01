@@ -11,6 +11,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -30,6 +31,11 @@ class PersonaLoaderTest {
     void setUp() throws Exception {
         TestCharacters.writeCharacter(root, "Aurora", CharacterClass.MAGE, mapper);
         loader = new PersonaLoader(root, mapper);
+    }
+
+    @Test
+    void listNamesIncludesAurora() {
+        assertEquals(List.of("Aurora"), loader.listKeys());
     }
 
     @Test
@@ -168,6 +174,7 @@ class PersonaLoaderTest {
         PersonaLoader isolated = new PersonaLoader(missing, mapper);
         Files.delete(missing);
         assertTrue(isolated.findKey("Someone").isEmpty());
+        assertTrue(isolated.listKeys().isEmpty());
         isolated.create("Nova", mapper.createObjectNode().put("name", "Nova"), Map.of());
         assertEquals("Nova", isolated.resolveKey("Nova"));
     }
@@ -183,5 +190,14 @@ class PersonaLoaderTest {
     void resolveStoragePathUsesRelativeConfiguredWhenItIsARoot() {
         PersonaLoader production = new PersonaLoader(Path.of("../../World/Persona"), mapper);
         assertTrue(production.storagePath().endsWith(Path.of("World", "Persona")));
+    }
+
+    @Test
+    void findPortraitUsesFallbackMainJpg() throws Exception {
+        assertTrue(loader.findPortrait("Aurora").isEmpty());
+        Path fallback = root.resolve("Aurora").resolve("references").resolve("main.jpg");
+        Files.createDirectories(fallback.getParent());
+        Files.write(fallback, new byte[] {7, 8, 9});
+        assertEquals(fallback.toAbsolutePath().normalize(), loader.findPortrait("aurora").orElseThrow());
     }
 }

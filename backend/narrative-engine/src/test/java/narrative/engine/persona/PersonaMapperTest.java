@@ -29,6 +29,11 @@ class PersonaMapperTest {
     }
 
     @Test
+    void listNamesIncludesAurora() {
+        assertEquals("Aurora", mapper.listNames().get(0));
+    }
+
+    @Test
     void mapCombinesManifestAndDomainFiles() {
         ObjectNode combined = mapper.map("aurora");
         assertEquals("Aurora", combined.path("name").asText());

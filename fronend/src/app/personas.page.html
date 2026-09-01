@@ -1,0 +1,28 @@
+<section class="page">
+  <div class="page-head">
+    <div class="page-copy">
+      <p class="eyebrow">Step 2</p>
+      <h1>Who are you in this story?</h1>
+      <p class="lede">
+        You are about to speak with <strong>{{ character()?.name || characterName() }}</strong>.
+        Hover a persona to learn more, then click to enter chat.
+      </p>
+      <a class="back" routerLink="/">Back to characters</a>
+    </div>
+    <a class="btn primary" [routerLink]="['/characters', characterName(), 'personas', 'new']">Create persona</a>
+  </div>
+
+  @if (error()) {
+    <p class="banner">{{ error() }}</p>
+  }
+
+  <div class="cast-grid">
+    @for (persona of personas(); track persona.name) {
+      <app-entity-card
+        kind="persona"
+        [entity]="persona"
+        actionLabel="Enter chat as {{ persona.name }}"
+        (choose)="enterChat($event)" />
+    }
+  </div>
+</section>

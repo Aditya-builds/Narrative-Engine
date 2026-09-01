@@ -5,11 +5,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import narrative.engine.world.EntityStore;
+import narrative.engine.world.Portraits;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -30,6 +32,22 @@ public class CharacterLoader implements EntityStore {
 
     public String resolveKey(String characterKey) {
         return findKey(characterKey).orElseThrow(() -> new CharacterNotFoundException(characterKey));
+    }
+
+    public List<String> listKeys() {
+        if (!Files.isDirectory(storagePath)) {
+            return List.of();
+        }
+        try (Stream<Path> stream = Files.list(storagePath)) {
+            return stream
+                    .filter(Files::isDirectory)
+                    .map(path -> path.getFileName().toString())
+                    .filter(name -> Files.isRegularFile(storagePath.resolve(name).resolve("character.json")))
+                    .sorted(String.CASE_INSENSITIVE_ORDER)
+                    .toList();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to list characters", e);
+        }
     }
 
     public Optional<String> findKey(String characterKey) {
@@ -113,6 +131,11 @@ public class CharacterLoader implements EntityStore {
         } catch (IOException e) {
             throw new RuntimeException("Failed to update character " + characterKey, e);
         }
+    }
+
+    public Optional<Path> findPortrait(String characterKey) {
+        String directory = resolveKey(characterKey);
+        return Portraits.find(characterDirectory(directory));
     }
 
     private Path characterDirectory(String characterKey) {
