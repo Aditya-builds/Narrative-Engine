@@ -38,14 +38,14 @@ Authoring notes for the JSON files are in [NOTES.md](NOTES.md).
 
 ## Frontend
 
-The Angular app in `fronend` walks character → persona → chat.
+The Angular app in `frontend` walks character → persona → chat.
 
 1. Start the backend from `backend/narrative-engine` with `mvn quarkus:dev`.
 2. In another terminal, start the UI:
 
 ```powershell
-cd "C:\Users\ASUS\OneDrive\Desktop\narrative engine\fronend"
-npm start
+cd frontend
+npm.cmd start
 ```
 
 Open `http://localhost:4200`. The UI proxies API calls to `http://localhost:8080` and uses GET to load, POST to create, and PUT to save description edits.
