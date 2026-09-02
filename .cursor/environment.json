@@ -1,0 +1,26 @@
+{
+  "name": "Narrative Engine",
+  "install": "./.cursor/install.sh",
+  "terminals": [
+    {
+      "name": "backend (quarkus :8080)",
+      "command": "cd backend/narrative-engine && QUARKUS_ANALYTICS_DISABLED=true ./mvnw quarkus:dev",
+      "description": "Quarkus World API (characters/personas) on http://localhost:8080"
+    },
+    {
+      "name": "agent (fastapi :8000)",
+      "command": "cd agent && .venv/bin/uvicorn app:app --host 0.0.0.0 --port 8000",
+      "description": "FastAPI + LangGraph chat agent on http://localhost:8000 (needs OPENAI_API_KEY for live chat)"
+    },
+    {
+      "name": "frontend (angular :4200)",
+      "command": "cd frontend && npm start",
+      "description": "Angular UI on http://localhost:4200 (proxies /characters,/personas to :8080 and /chat to :8000)"
+    }
+  ],
+  "ports": [
+    { "name": "frontend", "port": 4200 },
+    { "name": "agent", "port": 8000 },
+    { "name": "backend", "port": 8080 }
+  ]
+}
