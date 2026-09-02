@@ -3,6 +3,8 @@ import json
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, ToolMessage
 
 from config import CONVERSATIONS_DIR
+from graph.history import spoken_messages
+from graph.limits import MAX_PERSISTED_SPOKEN
 
 CONVERSATIONS_DIR.mkdir(exist_ok=True)
 
@@ -27,9 +29,21 @@ def save_conversation(state: dict) -> None:
         "persona_id": state.get("persona_id", ""),
         "conversation_summary": state.get("conversation_summary") or "",
         "important_memories": state.get("important_memories") or [],
-        "messages": [_message_to_json(msg) for msg in _spoken_history(state.get("messages") or [])],
+        "messages": [_message_to_json(msg) for msg in _messages_to_persist(state.get("messages") or [])],
     }
     _path(conversation_id).write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+
+
+def apply_summary_update(conversation_id: str, summary: str, summarized_messages: list) -> None:
+    """Write an incremental summary and drop the turns it already covers."""
+    stored = load_conversation(conversation_id)
+    stored["conversation_summary"] = summary
+    remaining = _remove_first_matches(
+        messages_from_json(stored.get("messages") or []),
+        summarized_messages,
+    )
+    stored["messages"] = [_message_to_json(msg) for msg in remaining]
+    _path(conversation_id).write_text(json.dumps(stored, indent=2) + "\n", encoding="utf-8")
 
 
 def delete_conversation(conversation_id: str) -> None:
@@ -58,14 +72,33 @@ def messages_from_json(raw: list) -> list[BaseMessage]:
     return restored
 
 
-def _spoken_history(messages: list) -> list:
-    spoken = [
-        msg
-        for msg in messages
-        if isinstance(msg, HumanMessage)
-        or (isinstance(msg, AIMessage) and not getattr(msg, "tool_calls", None))
-    ]
-    return spoken[-16:]
+def _messages_to_persist(messages: list) -> list:
+    spoken = spoken_messages(messages)
+    if len(spoken) > MAX_PERSISTED_SPOKEN:
+        return spoken[-MAX_PERSISTED_SPOKEN:]
+    return spoken
+
+
+def _remove_first_matches(messages: list, summarized: list) -> list:
+    remaining = list(messages)
+    for target in summarized:
+        key = _message_key(target)
+        for index, msg in enumerate(remaining):
+            if _message_key(msg) == key:
+                remaining.pop(index)
+                break
+    return remaining
+
+
+def _message_key(msg) -> tuple[str, str]:
+    if isinstance(msg, HumanMessage):
+        kind = "human"
+    elif isinstance(msg, AIMessage):
+        kind = "ai"
+    else:
+        kind = "other"
+    content = msg.content if isinstance(getattr(msg, "content", None), str) else str(getattr(msg, "content", ""))
+    return (kind, content)
 
 
 def _message_to_json(msg: BaseMessage) -> dict:

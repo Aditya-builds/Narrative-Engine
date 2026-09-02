@@ -1,17 +1,22 @@
 import logging
 import uuid
 
-from fastapi import HTTPException
+from fastapi import BackgroundTasks, HTTPException
 from langchain_core.messages import HumanMessage
 
 from app.errors import http_error_from_exception
 from app.schemas import ChatRequest, ChatResponse
+from graph.summary import pending_summary_messages, run_summary_maintenance
 from memory import load_conversation, messages_from_json, save_conversation
 
 logger = logging.getLogger(__name__)
 
 
-def run_chat(graph, request: ChatRequest) -> ChatResponse:
+def run_chat(
+    graph,
+    request: ChatRequest,
+    background_tasks: BackgroundTasks | None = None,
+) -> ChatResponse:
     message = request.message.strip()
     character = request.character.strip()
     persona = request.persona.strip()
@@ -38,6 +43,7 @@ def run_chat(graph, request: ChatRequest) -> ChatResponse:
                 "conversation_summary": stored.get("conversation_summary") or "",
                 "important_memories": stored.get("important_memories") or [],
                 "messages": [*history, HumanMessage(content=message)],
+                "llm_calls_this_turn": 0,
             }
         )
     except HTTPException:
@@ -50,6 +56,10 @@ def run_chat(graph, request: ChatRequest) -> ChatResponse:
         save_conversation(result)
     except Exception:
         pass
+
+    if background_tasks is not None and pending_summary_messages(result):
+        background_tasks.add_task(run_summary_maintenance, thread_id)
+
     return ChatResponse(
         response=(result.get("response") or "").strip() or "…",
         conversation_id=thread_id,

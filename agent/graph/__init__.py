@@ -7,12 +7,12 @@ from tools import TOOLS
 
 
 def compile_graph():
-    # One graph is the orchestrator ("master agent"):
-    # load_context     keep Character/Persona runtime objects
-    # select_context   Agent 1: pick relevant layers for this turn
-    # llm              speak / decide that an event happened
-    # tools            Agent 2: rule-based Quarkus updates
-    # update_memory    Agent 3: recent messages, summary, important facts
+    # One graph is the orchestrator:
+    # load_context     Character/Persona runtime objects
+    # select_context   deterministic layer pick for this turn
+    # llm              speak / decide that an event happened (budgeted)
+    # tools            rule-based Quarkus updates (no LLM)
+    # update_memory    spoken reply, memories, state-change notes (no LLM)
     graph = StateGraph(ConversationState)
     graph.add_node("load_context", load_context)
     graph.add_node("select_context", select_context)
