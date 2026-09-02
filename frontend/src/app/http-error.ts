@@ -20,6 +20,11 @@ export function messageFromHttpError(err: unknown, fallback: string): string {
   if (typeof http?.error?.error === 'string' && _safeDetail(http.error.error)) {
     return http.error.error;
   }
+  if (http?.status === 401) {
+    return typeof detail === 'string' && _safeDetail(detail)
+      ? detail
+      : 'Enter your OpenAI API key before chatting.';
+  }
   if (http?.status === 404) {
     return 'That page or character could not be found.';
   }

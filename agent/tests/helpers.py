@@ -1,13 +1,15 @@
-from langchain_core.messages import HumanMessage
+from langchain_core.messages import AIMessage, HumanMessage
 
 
 class FakeChat:
-    def __init__(self, reply, max_tokens=None):
-        self.reply = reply
-        self.max_tokens = max_tokens
+    def __init__(self, reply=None, max_tokens=None, **kwargs):
+        self.reply = reply if reply is not None else AIMessage(content="Hello.")
+        self.max_tokens = max_tokens if max_tokens is not None else kwargs.get("max_tokens")
+        self.kwargs = kwargs
         self.invocations: list[list] = []
-        self.model_name = "gpt-test"
-        self.model = "gpt-test"
+        self.model_name = kwargs.get("model") or "gpt-test"
+        self.model = self.model_name
+        self.api_key = kwargs.get("api_key")
 
     def bind_tools(self, _tools):
         return self

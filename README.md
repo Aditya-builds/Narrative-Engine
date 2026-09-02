@@ -63,4 +63,4 @@ copy .env.example .env
 uvicorn app:app --reload --port 8000
 ```
 
-Set `OPENAI_API_KEY` in `agent/.env`. Keep Quarkus running on port 8080.
+Set `OPENAI_API_KEY` in `agent/.env`, or enter a key in the UI at `/api-key` before chatting. Keep Quarkus running on port 8080.

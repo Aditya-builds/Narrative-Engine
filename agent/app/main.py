@@ -22,7 +22,7 @@ def create_app() -> FastAPI:
         CORSMiddleware,
         allow_origins=["http://localhost:4200"],
         allow_methods=["*"],
-        allow_headers=["*"],
+        allow_headers=["*", "X-OpenAI-Api-Key"],
     )
 
     @app.exception_handler(Exception)
@@ -39,8 +39,13 @@ def create_app() -> FastAPI:
         return {"status": "ok"}
 
     @app.post("/chat", response_model=ChatResponse)
-    def chat(request: ChatRequest, background_tasks: BackgroundTasks) -> ChatResponse:
-        return run_chat(app.state.graph, request, background_tasks)
+    def chat(request: ChatRequest, background_tasks: BackgroundTasks, http_request: Request) -> ChatResponse:
+        return run_chat(
+            app.state.graph,
+            request,
+            background_tasks,
+            openai_api_key=http_request.headers.get("x-openai-api-key"),
+        )
 
     @app.delete("/conversations/{conversation_id}")
     def remove_conversation(conversation_id: str) -> dict[str, str]:

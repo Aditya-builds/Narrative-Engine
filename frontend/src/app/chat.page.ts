@@ -6,6 +6,7 @@ import { catchError } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { ChatStore } from './chat-store';
 import { ChatMessage, ReplyLength, WorldEntity } from './models';
+import { OpenAiKeyStore } from './openai-key.store';
 import { PortraitComponent } from './portrait';
 import { messageFromHttpError } from './http-error';
 
@@ -17,6 +18,7 @@ import { messageFromHttpError } from './http-error';
 export class ChatPage implements OnInit, AfterViewChecked, OnDestroy {
   private readonly api = inject(ApiService);
   private readonly store = inject(ChatStore);
+  private readonly keys = inject(OpenAiKeyStore);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private shouldScroll = false;
@@ -106,6 +108,10 @@ export class ChatPage implements OnInit, AfterViewChecked, OnDestroy {
     const persona = this.persona();
     const character = this.character();
     if (!text || !persona || !character || this.busy()) {
+      return;
+    }
+    if (!this.keys.has()) {
+      void this.router.navigate(['/api-key'], { queryParams: { returnUrl: this.router.url } });
       return;
     }
     this.error.set('');

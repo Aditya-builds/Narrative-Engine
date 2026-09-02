@@ -6,17 +6,23 @@ import { EntityEditorPage } from './entity-editor.page';
 import { ChatsPage } from './chats.page';
 import { ProfilePage } from './profile.page';
 import { MyPersonasPage } from './my-personas.page';
+import { ApiKeyPage } from './api-key.page';
+import { openaiKeyGuard } from './openai-key.guard';
 
 export const routes: Routes = [
   { path: '', component: CharactersPage },
   { path: 'profile', component: ProfilePage },
+  { path: 'api-key', component: ApiKeyPage },
   { path: 'chats', component: ChatsPage },
   { path: 'personas/new', component: EntityEditorPage, data: { kind: 'persona' } },
   { path: 'personas', component: MyPersonasPage },
   { path: 'characters/new', component: EntityEditorPage, data: { kind: 'character' } },
   { path: 'characters/:characterName/personas/new', component: EntityEditorPage, data: { kind: 'persona' } },
   { path: 'characters/:characterName/personas', component: PersonasPage },
-  { path: 'characters/:characterName/personas/:personaName/chat', component: ChatPage },
+  {
+    path: 'characters/:characterName/personas/:personaName/chat',
+    component: ChatPage,
+    canActivate: [openaiKeyGuard]
+  },
   { path: '**', redirectTo: '' }
 ];
-

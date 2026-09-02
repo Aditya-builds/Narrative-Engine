@@ -7,8 +7,8 @@ def http_error_from_exception(exc: Exception) -> HTTPException:
     blob = f"{name} {text}"
     if any(token in blob for token in ("auth", "api key", "invalid_api_key", "unauthorized")):
         return HTTPException(
-            status_code=503,
-            detail="The storyteller is not signed in. Check the agent API key.",
+            status_code=401,
+            detail="That OpenAI API key was rejected. Check it and try again.",
         )
     if any(token in blob for token in ("insufficient_quota", "quota", "billing")):
         return HTTPException(

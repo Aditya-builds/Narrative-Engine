@@ -1,0 +1,41 @@
+<section class="page key-page">
+  <div class="page-copy">
+    <p class="eyebrow">Setup</p>
+    <h1>OpenAI API key</h1>
+    <p class="lede">
+      Enter your key before you start chatting. It stays in this browser tab and is sent only to the
+      local agent when you send a message. It is not saved with characters, personas, or chat history.
+    </p>
+  </div>
+
+  @if (error()) {
+    <p class="banner">{{ error() }}</p>
+  } @else if (hasKey()) {
+    <p class="lede">A key is already saved in this tab. Continue, or paste a new one to replace it.</p>
+  }
+
+  <form class="form-section key-form" (ngSubmit)="save()">
+    <label>
+      <span>API key</span>
+      <input
+        name="openaiKey"
+        type="password"
+        autocomplete="off"
+        spellcheck="false"
+        placeholder="sk-..."
+        [(ngModel)]="draft"
+      />
+    </label>
+    <div class="editor-actions">
+      @if (hasKey()) {
+        <button type="button" class="btn" (click)="clear()">Remove key</button>
+      }
+      <a class="btn" routerLink="/">Cancel</a>
+      @if (hasKey() && !draft.trim()) {
+        <button type="button" class="btn primary" (click)="continueExisting()">Continue</button>
+      } @else {
+        <button type="submit" class="btn primary" [disabled]="!draft.trim()">Save and continue</button>
+      }
+    </div>
+  </form>
+</section>
