@@ -62,12 +62,12 @@ def test_has_server_api_key_ignores_placeholders(monkeypatch):
 
 
 def test_has_server_api_key_when_env_is_set(monkeypatch):
-    monkeypatch.setenv("OPENAI_API_KEY", "sk-env-from-dotenv")
+    monkeypatch.setenv("OPENAI_API_KEY", "test-env-from-dotenv")
     assert has_server_api_key() is True
 
 
 def test_env_key_is_used_when_header_is_missing(monkeypatch):
-    monkeypatch.setenv("OPENAI_API_KEY", "sk-env-key-1234567890")
+    monkeypatch.setenv("OPENAI_API_KEY", "test-env-placeholder")
     built: list[FakeChat] = []
 
     def factory(**kwargs):
@@ -87,11 +87,11 @@ def test_env_key_is_used_when_header_is_missing(monkeypatch):
     result = run_chat(compile_graph(), _chat_request(), openai_api_key=None)
     assert result.response
     assert built
-    assert built[0].api_key == "sk-env-key-1234567890"
+    assert built[0].api_key == "test-env-placeholder"
 
 
 def test_request_header_key_overrides_env_key(monkeypatch):
-    monkeypatch.setenv("OPENAI_API_KEY", "sk-env-key-should-not-win")
+    monkeypatch.setenv("OPENAI_API_KEY", "test-env-should-not-win")
     built: list[FakeChat] = []
 
     def factory(**kwargs):
@@ -111,11 +111,11 @@ def test_request_header_key_overrides_env_key(monkeypatch):
     result = run_chat(
         compile_graph(),
         _chat_request(),
-        openai_api_key="sk-header-key-wins-1234567890",
+        openai_api_key="test-header-placeholder",
     )
     assert result.response
     assert built
-    assert built[0].api_key == "sk-header-key-wins-1234567890"
+    assert built[0].api_key == "test-header-placeholder"
 
 
 def test_request_header_key_is_used_for_the_model(monkeypatch):
@@ -139,12 +139,12 @@ def test_request_header_key_is_used_for_the_model(monkeypatch):
     result = run_chat(
         compile_graph(),
         _chat_request(),
-        openai_api_key="sk-test-user-key-1234567890",
+        openai_api_key="test-user-placeholder",
     )
     assert "nod" in result.response.lower() or result.response
     assert built
-    assert built[0].api_key == "sk-test-user-key-1234567890"
-    assert "sk-test-user-key-1234567890" not in str(result.model_dump())
+    assert built[0].api_key == "test-user-placeholder"
+    assert "test-user-placeholder" not in str(result.model_dump())
 
 
 def test_api_key_is_not_written_to_conversation_files(tmp_path, monkeypatch):
@@ -158,9 +158,9 @@ def test_api_key_is_not_written_to_conversation_files(tmp_path, monkeypatch):
     result = run_chat(
         compile_graph(),
         _chat_request(),
-        openai_api_key="sk-secret-do-not-store",
+        openai_api_key="test-secret-do-not-store",
     )
     stored = load_conversation(result.conversation_id)
     blob = str(stored)
-    assert "sk-secret-do-not-store" not in blob
+    assert "test-secret-do-not-store" not in blob
     assert "api_key" not in stored

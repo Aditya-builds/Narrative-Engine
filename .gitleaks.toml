@@ -1,0 +1,10 @@
+title = "Narrative Engine"
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Unit tests use fake API keys, not live credentials"
+paths = [
+  '''(^|/)agent/tests/''',
+]

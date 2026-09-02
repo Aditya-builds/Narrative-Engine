@@ -28,7 +28,7 @@ jobs:
           gitleaks version
 
       - name: Scan repository for secrets
-        run: gitleaks detect --source . --verbose --redact --exit-code 1
+        run: gitleaks detect --source . --verbose --redact --exit-code 1 --config .gitleaks.toml
 
   test:
     name: Backend tests
