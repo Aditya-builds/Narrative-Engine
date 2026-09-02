@@ -16,7 +16,7 @@
         <quarkus.platform.version>3.39.1</quarkus.platform.version>
         <skipITs>true</skipITs>
         <surefire-plugin.version>3.5.6</surefire-plugin.version>
-        <jacoco.version>0.8.13</jacoco.version>
+        <jacoco.version>0.8.15</jacoco.version>
         <quarkus.jacoco.data-file>${project.build.directory}/jacoco-quarkus.exec</quarkus.jacoco.data-file>
         <quarkus.jacoco.reuse-data-file>true</quarkus.jacoco.reuse-data-file>
         <quarkus.jacoco.report-location>${project.build.directory}/jacoco-report</quarkus.jacoco.report-location>
