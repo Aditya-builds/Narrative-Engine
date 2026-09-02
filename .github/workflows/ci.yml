@@ -55,7 +55,7 @@ jobs:
 
       - name: Upload JaCoCo report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: jacoco-report
           path: backend/narrative-engine/target/jacoco-report
@@ -63,7 +63,7 @@ jobs:
 
       - name: Upload surefire results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: backend-surefire
           path: backend/narrative-engine/target/surefire-reports
@@ -100,7 +100,7 @@ jobs:
 
       - name: Upload coverage and results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: agent-test-results
           path: |
