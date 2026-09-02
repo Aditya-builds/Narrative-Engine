@@ -15,3 +15,11 @@
 #   uvicorn app:app --reload --port 8000
 #
 # Conversation JSON is stored under agent/conversations/.
+#
+# Tests (from this folder):
+#   pip install -r requirements.txt pytest
+#   pytest
+#
+# LLM usage is logged at INFO as:
+#   [LLM] model=... node=call_llm input=... cached=... output=... total=... latency=... turn_calls=...
+# Cost estimates are optional; set LLM_PRICE_*_PER_MILLION or LLM_MODEL_PRICING_JSON.

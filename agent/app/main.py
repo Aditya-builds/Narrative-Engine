@@ -1,6 +1,6 @@
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import BackgroundTasks, FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
@@ -39,8 +39,8 @@ def create_app() -> FastAPI:
         return {"status": "ok"}
 
     @app.post("/chat", response_model=ChatResponse)
-    def chat(request: ChatRequest) -> ChatResponse:
-        return run_chat(app.state.graph, request)
+    def chat(request: ChatRequest, background_tasks: BackgroundTasks) -> ChatResponse:
+        return run_chat(app.state.graph, request, background_tasks)
 
     @app.delete("/conversations/{conversation_id}")
     def remove_conversation(conversation_id: str) -> dict[str, str]:

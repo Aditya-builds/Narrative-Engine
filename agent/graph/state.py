@@ -18,3 +18,4 @@ class ConversationState(TypedDict):
     messages: Annotated[list[AnyMessage], add_messages]
     response: str
     applied_state_changes: list[str]
+    llm_calls_this_turn: int

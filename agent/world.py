@@ -133,7 +133,18 @@ def _pick_layers(entity: dict, layers: list[str]) -> dict:
         return entity
     if "identity" not in entity:
         return entity
-    return {layer: entity.get(layer) for layer in layers if layer in entity}
+    picked = {layer: entity.get(layer) for layer in layers if layer in entity}
+    return _drop_empty(picked)
+
+
+def _drop_empty(value):
+    if isinstance(value, dict):
+        cleaned = {key: _drop_empty(item) for key, item in value.items()}
+        return {key: item for key, item in cleaned.items() if item not in (None, "", {}, [])}
+    if isinstance(value, list):
+        cleaned = [_drop_empty(item) for item in value]
+        return [item for item in cleaned if item not in (None, "", {}, [])]
+    return value
 
 
 def _abilities_for_rank(abilities: dict, rank: str) -> dict:
