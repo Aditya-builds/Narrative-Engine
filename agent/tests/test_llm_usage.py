@@ -53,6 +53,25 @@ def test_usage_metadata_is_captured(monkeypatch):
     assert usage.latency_ms is not None
 
 
+def test_zero_token_counts_are_preserved():
+    reply = AIMessage(
+        content="ok",
+        usage_metadata={
+            "input_tokens": 0,
+            "output_tokens": 0,
+            "total_tokens": 0,
+            "input_token_details": {"cache_read": 0},
+            "output_token_details": {"reasoning": 0},
+        },
+    )
+    usage = extract_usage(reply)
+    assert usage["input_tokens"] == 0
+    assert usage["output_tokens"] == 0
+    assert usage["cached_input_tokens"] == 0
+    assert usage["reasoning_tokens"] == 0
+    assert usage["total_tokens"] == 0
+
+
 def test_openai_style_usage_metadata_is_extracted():
     reply = AIMessage(
         content="ok",

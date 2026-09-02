@@ -60,15 +60,16 @@ def extract_usage(response: Any) -> dict[str, int | None]:
         usage["total_tokens"] = _as_int(meta.get("total_tokens"))
         in_details = meta.get("input_token_details") or meta.get("input_tokens_details") or {}
         if isinstance(in_details, dict):
-            usage["cached_input_tokens"] = _as_int(
-                in_details.get("cache_read")
-                or in_details.get("cached_tokens")
-                or in_details.get("cache_read_tokens")
+            usage["cached_input_tokens"] = _first_int(
+                in_details.get("cache_read"),
+                in_details.get("cached_tokens"),
+                in_details.get("cache_read_tokens"),
             )
         out_details = meta.get("output_token_details") or meta.get("output_tokens_details") or {}
         if isinstance(out_details, dict):
-            usage["reasoning_tokens"] = _as_int(
-                out_details.get("reasoning") or out_details.get("reasoning_tokens")
+            usage["reasoning_tokens"] = _first_int(
+                out_details.get("reasoning"),
+                out_details.get("reasoning_tokens"),
             )
 
     rm = getattr(response, "response_metadata", None) or {}
@@ -76,24 +77,29 @@ def extract_usage(response: Any) -> dict[str, int | None]:
         tu = rm.get("token_usage") or rm.get("usage") or {}
         if isinstance(tu, dict) and tu:
             if usage["input_tokens"] is None:
-                usage["input_tokens"] = _as_int(tu.get("prompt_tokens") or tu.get("input_tokens"))
+                usage["input_tokens"] = _first_int(tu.get("prompt_tokens"), tu.get("input_tokens"))
             if usage["output_tokens"] is None:
-                usage["output_tokens"] = _as_int(tu.get("completion_tokens") or tu.get("output_tokens"))
+                usage["output_tokens"] = _first_int(tu.get("completion_tokens"), tu.get("output_tokens"))
             if usage["total_tokens"] is None:
                 usage["total_tokens"] = _as_int(tu.get("total_tokens"))
             ptd = tu.get("prompt_tokens_details") or {}
             if isinstance(ptd, dict) and usage["cached_input_tokens"] is None:
-                usage["cached_input_tokens"] = _as_int(
-                    ptd.get("cached_tokens") or ptd.get("cache_read_tokens") or ptd.get("cache_read")
+                usage["cached_input_tokens"] = _first_int(
+                    ptd.get("cached_tokens"),
+                    ptd.get("cache_read_tokens"),
+                    ptd.get("cache_read"),
                 )
             ctd = tu.get("completion_tokens_details") or {}
             if isinstance(ctd, dict) and usage["reasoning_tokens"] is None:
-                usage["reasoning_tokens"] = _as_int(ctd.get("reasoning_tokens") or ctd.get("reasoning"))
+                usage["reasoning_tokens"] = _first_int(
+                    ctd.get("reasoning_tokens"),
+                    ctd.get("reasoning"),
+                )
 
         if usage["input_tokens"] is None:
-            usage["input_tokens"] = _as_int(rm.get("prompt_tokens") or rm.get("input_tokens"))
+            usage["input_tokens"] = _first_int(rm.get("prompt_tokens"), rm.get("input_tokens"))
         if usage["output_tokens"] is None:
-            usage["output_tokens"] = _as_int(rm.get("completion_tokens") or rm.get("output_tokens"))
+            usage["output_tokens"] = _first_int(rm.get("completion_tokens"), rm.get("output_tokens"))
 
     if usage["total_tokens"] is None:
         parts = [usage["input_tokens"], usage["output_tokens"]]
@@ -289,6 +295,14 @@ def _as_int(value: Any) -> int | None:
         return int(value)
     except (TypeError, ValueError):
         return None
+
+
+def _first_int(*values: Any) -> int | None:
+    for value in values:
+        parsed = _as_int(value)
+        if parsed is not None:
+            return parsed
+    return None
 
 
 def _dash(value: int | None) -> str:

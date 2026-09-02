@@ -31,10 +31,13 @@ def bounded_messages(messages: list, keep: int = KEEP_RECENT) -> list:
             continue
         if isinstance(msg, (HumanMessage, AIMessage)):
             has_tool_calls = bool(getattr(msg, "tool_calls", None))
-            if conv_count >= keep:
-                if has_tool_calls and selected and isinstance(selected[-1], ToolMessage):
+            if has_tool_calls:
+                # Keep the AIMessage that owns trailing tool results; do not
+                # spend the recent conversational window on tool stubs.
+                if selected and isinstance(selected[-1], ToolMessage):
                     selected.append(msg)
-                    continue
+                continue
+            if conv_count >= keep:
                 break
             selected.append(msg)
             conv_count += 1
