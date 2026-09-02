@@ -131,3 +131,44 @@ def test_cost_estimate_unavailable_without_pricing(monkeypatch):
     monkeypatch.delenv("LLM_PRICE_CACHED_INPUT_PER_MILLION", raising=False)
     monkeypatch.delenv("LLM_PRICE_OUTPUT_PER_MILLION", raising=False)
     assert estimate_cost_usd("unknown-model", {"input_tokens": 10, "output_tokens": 5}) is None
+
+
+def test_usage_is_appended_to_a_persistent_file(_usage_log_path):
+    import json
+
+    from llm_usage import LLMUsage, record_usage
+
+    first = LLMUsage(
+        conversation_id="conv-a",
+        node="call_llm",
+        model="gpt-test",
+        input_tokens=10,
+        output_tokens=4,
+        total_tokens=14,
+        latency_ms=12.5,
+        calls_this_turn=1,
+    )
+    second = LLMUsage(
+        conversation_id="conv-b",
+        node="summarize",
+        model="gpt-test",
+        input_tokens=20,
+        output_tokens=6,
+        total_tokens=26,
+        latency_ms=8.0,
+        calls_this_turn=0,
+    )
+    record_usage(first)
+    record_usage(second)
+
+    lines = _usage_log_path.read_text(encoding="utf-8").strip().splitlines()
+    assert len(lines) == 2
+    rows = [json.loads(line) for line in lines]
+    assert rows[0]["conversation_id"] == "conv-a"
+    assert rows[0]["input_tokens"] == 10
+    assert rows[0]["total_tokens"] == 14
+    assert rows[0]["recorded_at"]
+    assert rows[1]["conversation_id"] == "conv-b"
+    assert rows[1]["node"] == "summarize"
+    assert "api_key" not in rows[0]
+    assert "prompt" not in rows[0]

@@ -1,4 +1,5 @@
 import json
+import threading
 
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, ToolMessage
 
@@ -7,6 +8,8 @@ from graph.history import spoken_messages
 from graph.limits import MAX_PERSISTED_SPOKEN
 
 CONVERSATIONS_DIR.mkdir(exist_ok=True)
+_WRITE_LOCKS: dict[str, threading.Lock] = {}
+_WRITE_LOCKS_GUARD = threading.Lock()
 
 
 def load_conversation(conversation_id: str) -> dict:
@@ -31,7 +34,7 @@ def save_conversation(state: dict) -> None:
         "important_memories": state.get("important_memories") or [],
         "messages": [_message_to_json(msg) for msg in _messages_to_persist(state.get("messages") or [])],
     }
-    _path(conversation_id).write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+    _write_json(_path(conversation_id), payload)
 
 
 def apply_summary_update(conversation_id: str, summary: str, summarized_messages: list) -> None:
@@ -43,7 +46,7 @@ def apply_summary_update(conversation_id: str, summary: str, summarized_messages
         summarized_messages,
     )
     stored["messages"] = [_message_to_json(msg) for msg in remaining]
-    _path(conversation_id).write_text(json.dumps(stored, indent=2) + "\n", encoding="utf-8")
+    _write_json(_path(conversation_id), stored)
 
 
 def delete_conversation(conversation_id: str) -> None:
@@ -114,6 +117,18 @@ def _message_to_json(msg: BaseMessage) -> dict:
             "name": msg.name,
         }
     return {"type": "human", "content": str(msg.content)}
+
+
+def _write_json(path, payload: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    key = str(path)
+    with _WRITE_LOCKS_GUARD:
+        lock = _WRITE_LOCKS.setdefault(key, threading.Lock())
+    tmp = path.with_suffix(".tmp")
+    data = json.dumps(payload, indent=2) + "\n"
+    with lock:
+        tmp.write_text(data, encoding="utf-8")
+        tmp.replace(path)
 
 
 def _path(conversation_id: str):

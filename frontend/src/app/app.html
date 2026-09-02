@@ -29,6 +29,10 @@
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.4 3.2 11.2V20.5h6.3v-6.1h4.9v6.1h6.4v-9.3z" /></svg>
             Profile
           </a>
+          <a routerLink="/api-key" routerLinkActive="on" (click)="closeProfile()">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.5 11V8.2a4.5 4.5 0 0 1 9 0V11H18v9.2H6V11zm2.2 0h4.6V8.2a2.3 2.3 0 0 0-4.6 0z" /></svg>
+            OpenAI API key
+          </a>
           <a routerLink="/" routerLinkActive="on" [routerLinkActiveOptions]="{ exact: true }" (click)="closeProfile()">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.2 10.2a2.4 2.4 0 1 0 0-4.8 2.4 2.4 0 0 0 0 4.8zm7.6 0a2.4 2.4 0 1 0 0-4.8 2.4 2.4 0 0 0 0 4.8zM4.4 18.8c.6-2.8 2.6-4.3 5.2-4.3 1 0 1.9.2 2.6.7 1.2-.9 2.6-1.3 4.2-1.3 2.6 0 4.6 1.5 5.2 4.3" /></svg>
             My Characters

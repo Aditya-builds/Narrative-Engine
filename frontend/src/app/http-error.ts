@@ -23,7 +23,7 @@ export function messageFromHttpError(err: unknown, fallback: string): string {
   if (http?.status === 401) {
     return typeof detail === 'string' && _safeDetail(detail)
       ? detail
-      : 'Enter your OpenAI API key before chatting.';
+      : 'No OpenAI API key is available. Paste your own key, or add OPENAI_API_KEY to the agent .env.';
   }
   if (http?.status === 404) {
     return 'That page or character could not be found.';

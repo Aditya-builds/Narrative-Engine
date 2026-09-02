@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ChatMessage, ReplyLength } from './models';
+import { ChatMessage, RemoteChatPreview, RemoteChatThread, ReplyLength } from './models';
 
 export interface ChatThreadPreview {
   character: string;
@@ -13,6 +13,7 @@ export interface StoredChat {
   conversationId: string;
   personaName: string;
   replyLength: ReplyLength;
+  updatedAt?: Date;
   messages: ChatMessage[];
 }
 
@@ -110,6 +111,71 @@ export class ChatStore {
     return stored?.conversationId ?? '';
   }
 
+  toRemote(character: string, stored: StoredChat): RemoteChatThread {
+    return {
+      conversation_id: stored.conversationId,
+      character,
+      persona_name: stored.personaName,
+      reply_length: stored.replyLength,
+      updated_at: new Date().toISOString(),
+      messages: stored.messages.map((message) => ({
+        speaker: message.speaker,
+        name: message.name,
+        text: message.text,
+        at: message.at.toISOString()
+      }))
+    };
+  }
+
+  fromRemote(thread: RemoteChatThread): StoredChat {
+    const length = thread.reply_length;
+    return {
+      conversationId: thread.conversation_id || '',
+      personaName: thread.persona_name || '',
+      replyLength: length === 'short' || length === 'long' ? length : 'medium',
+      updatedAt: thread.updated_at ? new Date(thread.updated_at) : undefined,
+      messages: (thread.messages || []).map((message) => ({
+        speaker: message.speaker,
+        name: message.name,
+        text: message.text,
+        at: new Date(message.at)
+      }))
+    };
+  }
+
+  previewFromRemote(item: RemoteChatPreview): ChatThreadPreview {
+    return {
+      character: item.character,
+      personaName: item.persona_name,
+      conversationId: item.conversation_id,
+      preview: item.preview,
+      at: item.at ? new Date(item.at) : new Date()
+    };
+  }
+
+  prefer(remote: StoredChat | null, local: StoredChat | null): StoredChat | null {
+    if (remote && local) {
+      const remoteAt = remote.updatedAt?.getTime() ?? 0;
+      const localAt = local.updatedAt?.getTime() ?? 0;
+      if (remoteAt !== localAt) {
+        return remoteAt > localAt ? remote : local;
+      }
+      return remote.messages.length >= local.messages.length ? remote : local;
+    }
+    return remote ?? local;
+  }
+
+  mergePreviews(remote: ChatThreadPreview[], local: ChatThreadPreview[]): ChatThreadPreview[] {
+    const byCharacter = new Map<string, ChatThreadPreview>();
+    for (const item of [...local, ...remote]) {
+      const previous = byCharacter.get(item.character);
+      if (!previous || item.at.getTime() >= previous.at.getTime()) {
+        byCharacter.set(item.character, item);
+      }
+    }
+    return [...byCharacter.values()].sort((left, right) => right.at.getTime() - left.at.getTime());
+  }
+
   private migrate(character: string): StoredChat | null {
     const prefix = `narrative-chat-thread:${character}:`;
     let best: StoredChat | null = null;
@@ -146,6 +212,7 @@ export class ChatStore {
         conversationId: stored.conversationId || '',
         personaName: stored.personaName || '',
         replyLength: stored.replyLength === 'short' || stored.replyLength === 'long' ? stored.replyLength : 'medium',
+        updatedAt: stored.updatedAt ? new Date(stored.updatedAt) : undefined,
         messages: (stored.messages || []).map((message) => ({
           speaker: message.speaker,
           name: message.name,

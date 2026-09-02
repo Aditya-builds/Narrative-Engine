@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ChatStore } from './chat-store';
+import { OpenAiKeyStore } from './openai-key.store';
 
 @Component({
   selector: 'app-profile-page',
@@ -14,7 +15,7 @@ import { ChatStore } from './chat-store';
         <a class="chat-card" routerLink="/api-key">
           <span class="chat-card-copy">
             <strong>OpenAI API key</strong>
-            <small>Required before chatting. Stored in this browser tab only.</small>
+            <small>{{ keyHint }}</small>
           </span>
           <span class="chat-card-chevron">›</span>
         </a>
@@ -44,5 +45,16 @@ import { ChatStore } from './chat-store';
   `
 })
 export class ProfilePage {
+  private readonly keys = inject(OpenAiKeyStore);
   readonly chatCount = inject(ChatStore).list().length;
+
+  get keyHint(): string {
+    if (this.keys.source() === 'env') {
+      return 'Using the server .env key. Change it here.';
+    }
+    if (this.keys.has()) {
+      return 'A personal key is saved in this tab.';
+    }
+    return 'Use your own key or the server .env credentials.';
+  }
 }

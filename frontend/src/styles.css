@@ -283,6 +283,27 @@ a.chat-card { cursor: pointer; }
   width: 100%;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
+.key-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.key-choice-copy {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.45;
+}
+.key-choice-or {
+  margin: 0.15rem 0;
+  text-align: center;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.72rem;
+}
+.key-choice-on {
+  border-color: var(--gold);
+}
 .page-head {
   display: flex;
   justify-content: space-between;

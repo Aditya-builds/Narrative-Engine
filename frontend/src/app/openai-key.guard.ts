@@ -5,7 +5,7 @@ import { OpenAiKeyStore } from './openai-key.store';
 export const openaiKeyGuard: CanActivateFn = (_route, state) => {
   const keys = inject(OpenAiKeyStore);
   const router = inject(Router);
-  if (keys.has()) {
+  if (keys.canChat()) {
     return true;
   }
   return router.createUrlTree(['/api-key'], { queryParams: { returnUrl: state.url } });

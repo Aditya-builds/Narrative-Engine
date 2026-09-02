@@ -12,7 +12,9 @@ from memory import load_conversation, messages_from_json, save_conversation
 
 logger = logging.getLogger(__name__)
 
-MISSING_API_KEY_DETAIL = "Enter your OpenAI API key before chatting."
+MISSING_API_KEY_DETAIL = (
+    "No OpenAI API key is available. Paste your own key, or add OPENAI_API_KEY to the agent .env."
+)
 
 
 def run_chat(
@@ -65,7 +67,7 @@ def run_chat(
         try:
             save_conversation(result)
         except Exception:
-            pass
+            logger.exception("Could not save conversation %s", thread_id)
 
         if background_tasks is not None and pending_summary_messages(result):
             background_tasks.add_task(run_summary_maintenance, thread_id, api_key)

@@ -3,39 +3,75 @@
     <p class="eyebrow">Setup</p>
     <h1>OpenAI API key</h1>
     <p class="lede">
-      Enter your key before you start chatting. It stays in this browser tab and is sent only to the
-      local agent when you send a message. It is not saved with characters, personas, or chat history.
+      Choose how this tab talks to OpenAI. You can paste your own key, or use the key already set in
+      the agent's <code>.env</code>. A personal key stays in this browser tab and is sent only to the
+      local agent when you send a message.
     </p>
   </div>
 
   @if (error()) {
     <p class="banner">{{ error() }}</p>
+  } @else if (source() === 'env') {
+    <p class="lede">This tab is using the server <code>.env</code> key.</p>
   } @else if (hasKey()) {
-    <p class="lede">A key is already saved in this tab. Continue, or paste a new one to replace it.</p>
+    <p class="lede">A personal key is already saved in this tab. Continue, replace it, or switch to the server key.</p>
   }
 
-  <form class="form-section key-form" (ngSubmit)="save()">
-    <label>
-      <span>API key</span>
-      <input
-        name="openaiKey"
-        type="password"
-        autocomplete="off"
-        spellcheck="false"
-        placeholder="sk-..."
-        [(ngModel)]="draft"
-      />
-    </label>
-    <div class="editor-actions">
-      @if (hasKey()) {
-        <button type="button" class="btn" (click)="clear()">Remove key</button>
-      }
-      <a class="btn" routerLink="/">Cancel</a>
-      @if (hasKey() && !draft.trim()) {
-        <button type="button" class="btn primary" (click)="continueExisting()">Continue</button>
+  <div class="key-choices">
+    <section class="form-section" [class.key-choice-on]="source() === 'env'">
+      <h2>Use the server key</h2>
+      @if (checking()) {
+        <p class="key-choice-copy">Checking whether the agent has <code>OPENAI_API_KEY</code> in <code>.env</code>…</p>
+      } @else if (serverCheckFailed()) {
+        <p class="key-choice-copy">
+          Could not reach the agent. Start it on port 8000, then refresh this page to use server credentials.
+        </p>
+      } @else if (hasServerKey()) {
+        <p class="key-choice-copy">
+          Uses <code>OPENAI_API_KEY</code> from the agent's <code>.env</code>. Your key is not sent from this browser.
+        </p>
       } @else {
-        <button type="submit" class="btn primary" [disabled]="!draft.trim()">Save and continue</button>
+        <p class="key-choice-copy">
+          No usable server key is configured. Add <code>OPENAI_API_KEY</code> to <code>agent/.env</code>, or paste your own key below.
+        </p>
       }
-    </div>
-  </form>
+      <div class="editor-actions">
+        <button
+          type="button"
+          class="btn primary"
+          (click)="useServer()"
+          [disabled]="checking() || !hasServerKey()">
+          Continue with server credentials
+        </button>
+      </div>
+    </section>
+
+    <p class="key-choice-or">or</p>
+
+    <form class="form-section key-form" [class.key-choice-on]="source() === 'user'" (ngSubmit)="save()">
+      <h2>Use my own key</h2>
+      <label>
+        <span>API key</span>
+        <input
+          name="openaiKey"
+          type="password"
+          autocomplete="off"
+          spellcheck="false"
+          placeholder="sk-..."
+          [(ngModel)]="draft"
+        />
+      </label>
+      <div class="editor-actions">
+        @if (hasKey() || source() === 'env') {
+          <button type="button" class="btn" (click)="clear()">Clear choice</button>
+        }
+        <a class="btn" routerLink="/">Cancel</a>
+        @if (hasKey() && !draft.trim()) {
+          <button type="button" class="btn primary" (click)="continueExisting()">Continue with my key</button>
+        } @else {
+          <button type="submit" class="btn primary" [disabled]="!draft.trim()">Save and continue</button>
+        }
+      </div>
+    </form>
+  </div>
 </section>

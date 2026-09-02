@@ -2,6 +2,7 @@ from langchain_core.messages import AIMessage
 
 from app.schemas import ChatRequest
 from app.service import MISSING_API_KEY_DETAIL, run_chat
+from graph.model import has_server_api_key
 from tests.helpers import FakeChat
 
 
@@ -53,6 +54,68 @@ def test_placeholder_env_key_is_rejected(monkeypatch):
         assert getattr(exc, "status_code", None) == 401
     else:
         raise AssertionError("expected HTTP 401")
+
+
+def test_has_server_api_key_ignores_placeholders(monkeypatch):
+    monkeypatch.setenv("OPENAI_API_KEY", "replace-me")
+    assert has_server_api_key() is False
+
+
+def test_has_server_api_key_when_env_is_set(monkeypatch):
+    monkeypatch.setenv("OPENAI_API_KEY", "sk-env-from-dotenv")
+    assert has_server_api_key() is True
+
+
+def test_env_key_is_used_when_header_is_missing(monkeypatch):
+    monkeypatch.setenv("OPENAI_API_KEY", "sk-env-key-1234567890")
+    built: list[FakeChat] = []
+
+    def factory(**kwargs):
+        model = FakeChat(AIMessage(content="A nod."), **kwargs)
+        built.append(model)
+        return model
+
+    _patch_llm(monkeypatch, factory)
+    monkeypatch.setattr("app.service.save_conversation", lambda _state: None)
+    monkeypatch.setattr(
+        "app.service.load_conversation",
+        lambda _cid: {"messages": [], "conversation_summary": "", "important_memories": []},
+    )
+
+    from graph import compile_graph
+
+    result = run_chat(compile_graph(), _chat_request(), openai_api_key=None)
+    assert result.response
+    assert built
+    assert built[0].api_key == "sk-env-key-1234567890"
+
+
+def test_request_header_key_overrides_env_key(monkeypatch):
+    monkeypatch.setenv("OPENAI_API_KEY", "sk-env-key-should-not-win")
+    built: list[FakeChat] = []
+
+    def factory(**kwargs):
+        model = FakeChat(AIMessage(content="A nod."), **kwargs)
+        built.append(model)
+        return model
+
+    _patch_llm(monkeypatch, factory)
+    monkeypatch.setattr("app.service.save_conversation", lambda _state: None)
+    monkeypatch.setattr(
+        "app.service.load_conversation",
+        lambda _cid: {"messages": [], "conversation_summary": "", "important_memories": []},
+    )
+
+    from graph import compile_graph
+
+    result = run_chat(
+        compile_graph(),
+        _chat_request(),
+        openai_api_key="sk-header-key-wins-1234567890",
+    )
+    assert result.response
+    assert built
+    assert built[0].api_key == "sk-header-key-wins-1234567890"
 
 
 def test_request_header_key_is_used_for_the_model(monkeypatch):

@@ -1,10 +1,10 @@
 import { AfterViewChecked, Component, ElementRef, OnDestroy, OnInit, ViewChild, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { forkJoin, of } from 'rxjs';
+import { forkJoin, of, firstValueFrom } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { ApiService } from './api.service';
-import { ChatStore } from './chat-store';
+import { ChatStore, StoredChat } from './chat-store';
 import { ChatMessage, ReplyLength, WorldEntity } from './models';
 import { OpenAiKeyStore } from './openai-key.store';
 import { PortraitComponent } from './portrait';
@@ -42,6 +42,10 @@ export class ChatPage implements OnInit, AfterViewChecked, OnDestroy {
   personaNotes = '';
   private conversationId = '';
   private typeTimer?: ReturnType<typeof setInterval>;
+  private destroyed = false;
+  private loadGen = 0;
+  private pendingReply = '';
+  private saveQueue: Promise<unknown> = Promise.resolve();
 
   ngOnInit(): void {
     this.route.paramMap.subscribe((params) => {
@@ -61,7 +65,9 @@ export class ChatPage implements OnInit, AfterViewChecked, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.stopTyping();
+    this.destroyed = true;
+    this.loadGen += 1;
+    this.stopTyping(true);
     this.persist();
   }
 
@@ -110,7 +116,7 @@ export class ChatPage implements OnInit, AfterViewChecked, OnDestroy {
     if (!text || !persona || !character || this.busy()) {
       return;
     }
-    if (!this.keys.has()) {
+    if (!this.keys.canChat()) {
       void this.router.navigate(['/api-key'], { queryParams: { returnUrl: this.router.url } });
       return;
     }
@@ -132,9 +138,13 @@ export class ChatPage implements OnInit, AfterViewChecked, OnDestroy {
       })
       .subscribe({
         next: (reply) => {
+          if (this.destroyed) {
+            return;
+          }
           this.conversationId = reply.conversation_id;
           this.waiting.set(false);
-          this.typeReply(character.name, reply.response);
+          this.pendingReply = reply.response || '...';
+          this.typeReply(character.name, this.pendingReply);
         },
         error: (err) => {
           this.waiting.set(false);
@@ -193,6 +203,7 @@ export class ChatPage implements OnInit, AfterViewChecked, OnDestroy {
   }
 
   private openThread(characterName: string, personaName: string): void {
+    const gen = ++this.loadGen;
     if (this.character()?.name === characterName && this.messages().length) {
       if (this.started() || personaName === this.persona()?.name) {
         this.showPersonas.set(false);
@@ -201,6 +212,9 @@ export class ChatPage implements OnInit, AfterViewChecked, OnDestroy {
       }
       this.api.getPersona(personaName).subscribe({
         next: (persona) => {
+          if (gen !== this.loadGen || this.destroyed) {
+            return;
+          }
           this.persona.set(persona);
           this.personaNotes = persona.description ?? '';
           this.persist();
@@ -209,7 +223,7 @@ export class ChatPage implements OnInit, AfterViewChecked, OnDestroy {
       });
       return;
     }
-    this.stopTyping();
+    this.stopTyping(true);
     this.waiting.set(false);
     this.busy.set(false);
     this.error.set('');
@@ -218,26 +232,23 @@ export class ChatPage implements OnInit, AfterViewChecked, OnDestroy {
       names: this.api.listPersonaNames().pipe(catchError(() => of([] as string[])))
     }).subscribe({
       next: ({ character, names }) => {
+        if (gen !== this.loadGen || this.destroyed) {
+          return;
+        }
         this.character.set(character);
         this.characterNotes = character.description ?? '';
         this.loadPersonas(names);
-        const stored = this.store.load(character.name);
-        this.replyLength = stored?.replyLength ?? 'medium';
-        const locked =
-          stored?.messages.some((message) => message.speaker === 'persona') && stored.personaName
-            ? stored.personaName
-            : '';
-        if (stored?.messages.length) {
-          this.conversationId = stored.conversationId;
-          this.messages.set(stored.messages);
-        } else {
-          this.conversationId = '';
-          const opening =
-            character.openingMessage?.trim() ||
-            `${character.name} turns toward you and waits for you to speak.`;
-          this.messages.set([this.line('character', character.name, opening)]);
-        }
-        this.loadActivePersona(character.name, locked || personaName);
+        const local = this.store.load(character.name);
+        this.api
+          .getChatThread(character.name)
+          .pipe(catchError(() => of(null)))
+          .subscribe((remote) => {
+            if (gen !== this.loadGen || this.destroyed) {
+              return;
+            }
+            const stored = this.store.prefer(remote ? this.store.fromRemote(remote) : null, local);
+            this.applyStoredThread(character, personaName, stored, gen);
+          });
       },
       error: () =>
         this.error.set('Could not load this conversation. Go back and pick the character again.')
@@ -254,9 +265,12 @@ export class ChatPage implements OnInit, AfterViewChecked, OnDestroy {
     });
   }
 
-  private loadActivePersona(characterName: string, personaName: string): void {
+  private loadActivePersona(characterName: string, personaName: string, gen: number): void {
     this.api.getPersona(personaName).subscribe({
       next: (persona) => {
+        if (gen !== this.loadGen || this.destroyed) {
+          return;
+        }
         this.persona.set(persona);
         this.personaNotes = persona.description ?? '';
         this.persist();
@@ -279,12 +293,67 @@ export class ChatPage implements OnInit, AfterViewChecked, OnDestroy {
   }
 
   private persist(): void {
+    if (this.destroyed && !this.pendingReply) {
+      return;
+    }
     const character = this.character();
     const persona = this.persona();
     if (!character || !persona) {
       return;
     }
-    this.store.save(character.name, persona.name, this.conversationId, this.messages(), this.replyLength);
+    const messages = this.messagesForSave(character.name);
+    this.store.save(character.name, persona.name, this.conversationId, messages, this.replyLength);
+    const stored = this.store.load(character.name);
+    if (!stored) {
+      return;
+    }
+    const payload = this.store.toRemote(character.name, stored);
+    this.saveQueue = this.saveQueue
+      .catch(() => undefined)
+      .then(() =>
+        firstValueFrom(this.api.saveChatThread(character.name, payload).pipe(catchError(() => of(null))))
+      );
+  }
+
+  private messagesForSave(characterName: string): ChatMessage[] {
+    const messages = this.messages();
+    if (!this.pendingReply) {
+      return messages;
+    }
+    if (!messages.length) {
+      return [this.line('character', characterName, this.pendingReply)];
+    }
+    const next = [...messages];
+    const last = next[next.length - 1];
+    if (last.speaker === 'character') {
+      next[next.length - 1] = { ...last, text: this.pendingReply };
+      return next;
+    }
+    return [...next, this.line('character', characterName, this.pendingReply)];
+  }
+
+  private applyStoredThread(
+    character: WorldEntity,
+    personaName: string,
+    stored: StoredChat | null,
+    gen: number
+  ): void {
+    this.replyLength = stored?.replyLength ?? 'medium';
+    const locked =
+      stored?.messages.some((message) => message.speaker === 'persona') && stored.personaName
+        ? stored.personaName
+        : '';
+    if (stored?.messages.length) {
+      this.conversationId = stored.conversationId;
+      this.messages.set(stored.messages);
+    } else {
+      this.conversationId = '';
+      const opening =
+        character.openingMessage?.trim() ||
+        `${character.name} turns toward you and waits for you to speak.`;
+      this.messages.set([this.line('character', character.name, opening)]);
+    }
+    this.loadActivePersona(character.name, locked || personaName, gen);
   }
 
   private line(speaker: ChatMessage['speaker'], name: string, text: string): ChatMessage {
@@ -297,6 +366,7 @@ export class ChatPage implements OnInit, AfterViewChecked, OnDestroy {
     const bubble = this.line('character', name, '');
     this.typing.set(true);
     this.messages.update((list) => [...list, bubble]);
+    this.persist();
     this.shouldScroll = true;
     let shown = 0;
     const chunk = Math.max(1, Math.ceil(text.length / 120));
@@ -310,6 +380,7 @@ export class ChatPage implements OnInit, AfterViewChecked, OnDestroy {
       });
       this.shouldScroll = true;
       if (shown >= text.length) {
+        this.pendingReply = '';
         this.stopTyping();
         this.persist();
         this.busy.set(false);
@@ -317,11 +388,27 @@ export class ChatPage implements OnInit, AfterViewChecked, OnDestroy {
     }, 16);
   }
 
-  private stopTyping(): void {
+  private stopTyping(flush = false): void {
     if (this.typeTimer) {
       clearInterval(this.typeTimer);
       this.typeTimer = undefined;
     }
     this.typing.set(false);
+    if (flush && this.pendingReply) {
+      const full = this.pendingReply;
+      this.messages.update((list) => {
+        if (!list.length) {
+          return list;
+        }
+        const next = [...list];
+        const last = next[next.length - 1];
+        if (last.speaker === 'character') {
+          next[next.length - 1] = { ...last, text: full };
+        }
+        return next;
+      });
+      this.persist();
+      this.pendingReply = '';
+    }
   }
 }

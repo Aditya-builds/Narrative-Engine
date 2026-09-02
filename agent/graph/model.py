@@ -28,6 +28,10 @@ def resolved_api_key() -> str | None:
     return clean_api_key(_REQUEST_API_KEY.get()) or clean_api_key(os.getenv("OPENAI_API_KEY"))
 
 
+def has_server_api_key() -> bool:
+    return clean_api_key(os.getenv("OPENAI_API_KEY")) is not None
+
+
 def configured_model_name() -> str:
     return os.getenv("OPENAI_MODEL", DEFAULT_MODEL)
 

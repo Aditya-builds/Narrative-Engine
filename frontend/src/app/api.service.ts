@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { ChatReply, WorldEntity } from './models';
+import { ChatReply, LlmConfig, RemoteChatPreview, RemoteChatThread, WorldEntity } from './models';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
@@ -43,6 +43,26 @@ export class ApiService {
 
   updatePersona(name: string, body: Record<string, unknown>): Observable<{ message: string }> {
     return this.http.put<{ message: string }>(`/update_persona/${encodeURIComponent(name)}`, body);
+  }
+
+  getLlmConfig(): Observable<LlmConfig> {
+    return this.http.get<LlmConfig>('/chat/config');
+  }
+
+  listChatThreads(): Observable<RemoteChatPreview[]> {
+    return this.http.get<RemoteChatPreview[]>('/chat/threads');
+  }
+
+  getChatThread(character: string): Observable<RemoteChatThread> {
+    return this.http.get<RemoteChatThread>(`/chat/threads/${encodeURIComponent(character)}`);
+  }
+
+  saveChatThread(character: string, thread: RemoteChatThread): Observable<RemoteChatThread> {
+    return this.http.put<RemoteChatThread>(`/chat/threads/${encodeURIComponent(character)}`, thread);
+  }
+
+  deleteChatThread(character: string): Observable<void> {
+    return this.http.delete<void>(`/chat/threads/${encodeURIComponent(character)}`);
   }
 
   sendChat(body: {

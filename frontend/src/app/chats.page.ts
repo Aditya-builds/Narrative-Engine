@@ -1,5 +1,7 @@
 import { Component, HostListener, OnInit, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { ChatStore, ChatThreadPreview } from './chat-store';
 import { PortraitComponent } from './portrait';
@@ -37,11 +39,17 @@ export class ChatsPage implements OnInit {
       return;
     }
     const conversationId = this.store.remove(chat.character);
-    if (conversationId) {
-      this.api.deleteConversation(conversationId).subscribe({ error: () => undefined });
-    }
+    this.chats.update((list) => list.filter((item) => item.character !== chat.character));
     this.menuFor.set('');
-    this.refresh();
+    this.api.deleteChatThread(chat.character).subscribe({
+      next: () => {
+        if (conversationId) {
+          this.api.deleteConversation(conversationId).subscribe({ error: () => undefined });
+        }
+        this.refresh();
+      },
+      error: () => this.refresh()
+    });
   }
 
   @HostListener('document:click')
@@ -50,6 +58,16 @@ export class ChatsPage implements OnInit {
   }
 
   private refresh(): void {
-    this.chats.set(this.store.list());
+    this.api
+      .listChatThreads()
+      .pipe(catchError(() => of([])))
+      .subscribe((remote) => {
+        this.chats.set(
+          this.store.mergePreviews(
+            remote.map((item) => this.store.previewFromRemote(item)),
+            this.store.list()
+          )
+        );
+      });
   }
 }

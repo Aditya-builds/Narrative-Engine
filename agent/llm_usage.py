@@ -5,9 +5,13 @@ from __future__ import annotations
 import json
 import logging
 import os
+import threading
 import time
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
+from datetime import datetime, timezone
 from typing import Any
+
+from config import USAGE_LOG_PATH
 
 logger = logging.getLogger("narrative.llm")
 
@@ -35,6 +39,7 @@ class LLMUsage:
 
 
 _LAST_USAGE: LLMUsage | None = None
+_USAGE_LOG_LOCK = threading.Lock()
 
 
 def last_recorded_usage() -> LLMUsage | None:
@@ -193,7 +198,7 @@ def record_usage(usage: LLMUsage) -> LLMUsage:
         _dash(usage.calls_this_turn),
         _cost(usage.estimated_cost_usd),
     )
-    logger.debug(
+    logger.info(
         "LLM Usage\n"
         "---------\n"
         "conversation: %s\n"
@@ -207,7 +212,8 @@ def record_usage(usage: LLMUsage) -> LLMUsage:
         "total_tokens: %s\n"
         "\n"
         "latency_ms: %s\n"
-        "calls_this_turn: %s",
+        "calls_this_turn: %s\n"
+        "cost_usd: %s",
         usage.conversation_id or "-",
         usage.node,
         usage.model,
@@ -218,8 +224,26 @@ def record_usage(usage: LLMUsage) -> LLMUsage:
         _dash(usage.total_tokens),
         _latency(usage.latency_ms),
         _dash(usage.calls_this_turn),
+        _cost(usage.estimated_cost_usd),
     )
+    _append_usage_log(usage)
     return usage
+
+
+def _append_usage_log(usage: LLMUsage) -> None:
+    try:
+        USAGE_LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
+        record = {
+            "recorded_at": datetime.now(timezone.utc).isoformat(),
+            **asdict(usage),
+        }
+        line = json.dumps(record, ensure_ascii=True) + "\n"
+        with _USAGE_LOG_LOCK:
+            with USAGE_LOG_PATH.open("a", encoding="utf-8") as fh:
+                fh.write(line)
+                fh.flush()
+    except OSError as exc:
+        logger.warning("Could not write LLM usage log %s: %s", USAGE_LOG_PATH, exc)
 
 
 def invoke_llm(
