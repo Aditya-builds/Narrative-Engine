@@ -8,10 +8,12 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import narrative.engine.api.IdempotencyStore;
 import narrative.engine.world.Portraits;
 
 import java.util.List;
@@ -23,11 +25,14 @@ public class PersonaResource {
 
     private final PersonaMapper personaMapper;
     private final PersonaLoader personaLoader;
+    private final IdempotencyStore idempotencyStore;
 
     @Inject
-    public PersonaResource(PersonaMapper personaMapper, PersonaLoader personaLoader) {
+    public PersonaResource(
+            PersonaMapper personaMapper, PersonaLoader personaLoader, IdempotencyStore idempotencyStore) {
         this.personaMapper = personaMapper;
         this.personaLoader = personaLoader;
+        this.idempotencyStore = idempotencyStore;
     }
 
     @GET
@@ -53,11 +58,16 @@ public class PersonaResource {
     @Path("/create_new_persona/{personaName}/{characterClass}")
     public Response createPersona(
             @PathParam("personaName") String personaName,
-            @PathParam("characterClass") String characterClass) {
+            @PathParam("characterClass") String characterClass,
+            @HeaderParam("Idempotency-Key") String idempotencyKey) {
+        IdempotencyStore.Cached cached = idempotencyStore.get("persona", idempotencyKey);
+        if (cached != null) {
+            return Response.status(cached.status()).entity(cached.entity()).build();
+        }
         personaMapper.create(personaName, characterClass);
-        return Response.status(Response.Status.CREATED)
-                .entity(Map.of("message", "successful creation"))
-                .build();
+        Map<String, String> entity = Map.of("message", "successful creation");
+        idempotencyStore.put("persona", idempotencyKey, Response.Status.CREATED.getStatusCode(), entity);
+        return Response.status(Response.Status.CREATED).entity(entity).build();
     }
 
     @PUT

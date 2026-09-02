@@ -164,3 +164,18 @@ def test_api_key_is_not_written_to_conversation_files(tmp_path, monkeypatch):
     blob = str(stored)
     assert "test-secret-do-not-store" not in blob
     assert "api_key" not in stored
+
+
+def test_mock_llm_allows_chat_without_api_key(monkeypatch):
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    monkeypatch.setenv("ENABLE_MOCK_LLM", "true")
+    monkeypatch.setattr("graph.nodes.load_world", _world_stub)
+    monkeypatch.setattr("app.service.save_conversation", lambda _state: None)
+    monkeypatch.setattr(
+        "app.service.load_conversation",
+        lambda _cid: {"messages": [], "conversation_summary": "", "important_memories": []},
+    )
+    from graph import compile_graph
+
+    result = run_chat(compile_graph(), _chat_request(), openai_api_key=None)
+    assert result.response.startswith("[mock]")

@@ -56,6 +56,8 @@ class PersonaLoaderTest {
         assertThrows(InvalidPersonaRequestException.class, () -> loader.resolveKey("../secret"));
         assertThrows(InvalidPersonaRequestException.class, () -> loader.resolveKey("a/b"));
         assertThrows(InvalidPersonaRequestException.class, () -> loader.resolveKey("a\\b"));
+        assertThrows(InvalidPersonaRequestException.class, () -> loader.resolveKey("<x>"));
+        assertThrows(InvalidPersonaRequestException.class, () -> loader.resolveKey("say\"hi"));
     }
 
     @Test

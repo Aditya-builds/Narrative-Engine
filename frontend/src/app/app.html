@@ -52,4 +52,10 @@
   <div class="app-body" [class.app-body-chat]="chatMode()">
     <router-outlet />
   </div>
+  @if (toast.message()) {
+    <div class="toast" role="status">
+      <p>{{ toast.message() }}</p>
+      <button type="button" class="toast-dismiss" (click)="toast.dismiss()">Dismiss</button>
+    </div>
+  }
 </div>

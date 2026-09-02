@@ -4,6 +4,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { switchMap } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { EntityClass, EntityDraft, applyClassDefaults, createDraft, toUpdateBody } from './defaults';
+import { messageFromHttpError } from './http-error';
 
 @Component({
   selector: 'app-entity-editor-page',
@@ -60,6 +61,10 @@ export class EntityEditorPage implements OnInit {
       this.error.set('Give them a name first.');
       return;
     }
+    if (/[<>"]/.test(name)) {
+      this.error.set('Names cannot include <, >, or quotes.');
+      return;
+    }
     this.busy.set(true);
     this.error.set('');
     const body = toUpdateBody(this.draft);
@@ -85,7 +90,7 @@ export class EntityEditorPage implements OnInit {
       },
       error: (err) => {
         this.busy.set(false);
-        this.error.set(err?.error?.error ?? 'Could not save. Try a different name.');
+        this.error.set(messageFromHttpError(err, 'Could not save. Try a different name.'));
       }
     });
   }

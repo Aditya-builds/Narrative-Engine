@@ -11,8 +11,19 @@ class WorldApiError(RuntimeError):
 
 def get_entity(kind: str, name: str) -> dict:
     path = f"/{_collection(kind)}/{name}"
-    with _client() as client:
-        response = client.get(path)
+    last_error: Exception | None = None
+    for attempt in range(2):
+        try:
+            with _client() as client:
+                response = client.get(path)
+            break
+        except httpx.RequestError as exc:
+            last_error = exc
+            if attempt == 0:
+                continue
+            raise WorldApiError(f"Could not reach Quarkus for GET {path}") from exc
+    else:
+        raise WorldApiError(f"Could not reach Quarkus for GET {path}") from last_error
     if response.status_code == 404:
         raise WorldApiError(f"{kind} '{name}' was not found")
     if response.status_code >= 400:
@@ -172,8 +183,14 @@ def _rank_spells(bucket: object, allowed: set[str]) -> list[str]:
 
 
 def _client() -> httpx.Client:
+    from observability import current_request_id
+
     base = os.getenv("QUARKUS_BASE_URL", "http://localhost:8080").rstrip("/")
-    return httpx.Client(base_url=base, timeout=15.0)
+    headers = {}
+    request_id = current_request_id()
+    if request_id:
+        headers["X-Request-ID"] = request_id
+    return httpx.Client(base_url=base, timeout=15.0, headers=headers)
 
 
 def _safe_load(kind: str, name: str, notes: list[str]) -> dict:

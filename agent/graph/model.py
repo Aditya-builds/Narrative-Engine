@@ -36,7 +36,15 @@ def configured_model_name() -> str:
     return os.getenv("OPENAI_MODEL", DEFAULT_MODEL)
 
 
-def chat_model(*, max_tokens: int | None = None) -> ChatOpenAI:
+def mock_llm_enabled() -> bool:
+    return os.getenv("ENABLE_MOCK_LLM", "").strip().lower() in {"1", "true", "yes", "on"}
+
+
+def chat_model(*, max_tokens: int | None = None):
+    if mock_llm_enabled():
+        from graph.mock import MockChatModel
+
+        return MockChatModel(model=configured_model_name(), max_tokens=max_tokens)
     name = configured_model_name()
     kwargs: dict[str, Any] = {
         "model": name,

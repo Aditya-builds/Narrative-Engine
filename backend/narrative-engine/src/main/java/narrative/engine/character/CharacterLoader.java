@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import narrative.engine.world.EntityStore;
+import narrative.engine.world.JsonFiles;
 import narrative.engine.world.Portraits;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
@@ -148,7 +149,10 @@ public class CharacterLoader implements EntityStore {
                 || characterKey.isBlank()
                 || characterKey.contains("..")
                 || characterKey.indexOf('/') >= 0
-                || characterKey.indexOf('\\') >= 0) {
+                || characterKey.indexOf('\\') >= 0
+                || characterKey.indexOf('<') >= 0
+                || characterKey.indexOf('>') >= 0
+                || characterKey.indexOf('"') >= 0) {
             throw new InvalidCharacterRequestException("Invalid character key");
         }
     }
@@ -218,6 +222,6 @@ public class CharacterLoader implements EntityStore {
     }
 
     private void writeJson(Path file, JsonNode node) throws IOException {
-        objectMapper.writerWithDefaultPrettyPrinter().writeValue(file.toFile(), node);
+        JsonFiles.writeAtomic(objectMapper, file, node);
     }
 }

@@ -185,6 +185,12 @@ def estimate_cost_usd(model: str, usage: dict[str, int | None]) -> float | None:
 def record_usage(usage: LLMUsage) -> LLMUsage:
     global _LAST_USAGE
     _LAST_USAGE = usage
+    try:
+        from metrics import record_tokens
+
+        record_tokens(usage.total_tokens)
+    except Exception:
+        pass
     logger.info(
         "[LLM] model=%s node=%s input=%s cached=%s output=%s reasoning=%s total=%s latency=%s turn_calls=%s cost_usd=%s",
         usage.model,

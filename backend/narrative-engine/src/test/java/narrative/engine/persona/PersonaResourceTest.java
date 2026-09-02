@@ -86,6 +86,25 @@ class PersonaResourceTest {
     }
 
     @Test
+    void createIsIdempotentWithKey() {
+        String name = unique("Idem");
+        String key = UUID.randomUUID().toString();
+        given()
+                .header("Idempotency-Key", key)
+                .when()
+                .post("/create_new_persona/{name}/{class}", name, "mage")
+                .then()
+                .statusCode(201);
+        given()
+                .header("Idempotency-Key", key)
+                .when()
+                .post("/create_new_persona/{name}/{class}", name, "mage")
+                .then()
+                .statusCode(201)
+                .body("message", equalTo("successful creation"));
+    }
+
+    @Test
     void createMeleeAndTypoClass() {
         String melee = unique("Melee");
         given()

@@ -1,4 +1,20 @@
-from fastapi import HTTPException
+from datetime import datetime, timezone
+
+from fastapi import HTTPException, Request
+from fastapi.responses import JSONResponse
+
+ERROR_CODES = {
+    400: "BAD_REQUEST",
+    401: "UNAUTHORIZED",
+    403: "FORBIDDEN",
+    404: "NOT_FOUND",
+    409: "CONFLICT",
+    429: "RATE_LIMITED",
+    500: "INTERNAL_ERROR",
+    502: "BAD_GATEWAY",
+    503: "UNAVAILABLE",
+    504: "TIMEOUT",
+}
 
 
 def http_error_from_exception(exc: Exception) -> HTTPException:
@@ -44,3 +60,51 @@ def http_error_from_exception(exc: Exception) -> HTTPException:
         status_code=503,
         detail="The character could not reply. Try again in a moment.",
     )
+
+
+def error_message(detail: object) -> str:
+    if isinstance(detail, str) and detail.strip():
+        return detail
+    if isinstance(detail, list) and detail:
+        first = detail[0]
+        if isinstance(first, dict) and first.get("msg"):
+            return str(first["msg"])
+        return str(first)
+    if detail:
+        return str(detail)
+    return "Request failed"
+
+
+def error_payload(request: Request | None, status: int, message: str) -> dict:
+    text = message.strip() if isinstance(message, str) and message.strip() else "Request failed"
+    path = request.url.path if request is not None else "/"
+    return {
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "path": path,
+        "status": status,
+        "errorCode": ERROR_CODES.get(status, "ERROR"),
+        "message": text,
+        "error": text,
+        "detail": text,
+    }
+
+
+def error_response(
+    request: Request | None, status: int, message: str, headers: dict | None = None
+) -> JSONResponse:
+    return JSONResponse(
+        status_code=status,
+        content=error_payload(request, status, message),
+        headers=headers or {},
+    )
+
+
+def json_from_http_exception(request: Request, exc: HTTPException) -> JSONResponse:
+    headers = dict(exc.headers or {})
+    return error_response(request, exc.status_code, error_message(exc.detail), headers)
+
+
+def json_from_exception(request: Request, exc: Exception) -> JSONResponse:
+    if isinstance(exc, HTTPException):
+        return json_from_http_exception(request, exc)
+    return json_from_http_exception(request, http_error_from_exception(exc))

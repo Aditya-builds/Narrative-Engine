@@ -16,5 +16,7 @@ module.exports = {
     }
   },
   "/conversations": { target: "http://localhost:8000", secure: false },
-  "/llm-config": { target: "http://localhost:8000", secure: false }
+  "/llm-config": { target: "http://localhost:8000", secure: false },
+  "/health": { target: "http://localhost:8000", secure: false },
+  "/metrics": { target: "http://localhost:8000", secure: false }
 };

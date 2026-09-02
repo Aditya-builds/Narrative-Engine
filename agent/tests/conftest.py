@@ -7,4 +7,9 @@ import pytest
 def _usage_log_path(tmp_path, monkeypatch):
     path = tmp_path / "llm_usage.jsonl"
     monkeypatch.setattr("llm_usage.USAGE_LOG_PATH", path)
-    return path
+    monkeypatch.delenv("ENABLE_MOCK_LLM", raising=False)
+    from settings import get_settings
+
+    get_settings.cache_clear()
+    yield path
+    get_settings.cache_clear()

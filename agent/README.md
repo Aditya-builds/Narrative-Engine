@@ -18,6 +18,10 @@
 # Chat requests may include header X-OpenAI-Api-Key. That key is used for the turn
 # and is never written to conversation JSON. If the header is missing, OPENAI_API_KEY
 # from the environment is used. Placeholder values like replace-me are ignored.
+# ENABLE_MOCK_LLM=true skips OpenAI and returns local mock replies.
+# GET /health, /health/live, /health/ready and GET /metrics (Prometheus text).
+# Errors use { timestamp, path, status, errorCode, message, error, detail }.
+# Every response echoes X-Request-ID.
 #
 # Conversation JSON is stored under agent/conversations/.
 # UI chat threads are stored under agent/chats/{Character}.json and survive uvicorn --reload.

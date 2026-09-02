@@ -58,7 +58,58 @@ class CharacterResourceTest {
                 .when().get("/characters/DoesNotExist")
                 .then()
                 .statusCode(404)
-                .body("error", equalTo("Character with key DoesNotExist not found"));
+                .body("error", equalTo("Character with key DoesNotExist not found"))
+                .body("message", equalTo("Character with key DoesNotExist not found"))
+                .body("detail", equalTo("Character with key DoesNotExist not found"))
+                .body("status", equalTo(404))
+                .body("errorCode", equalTo("NOT_FOUND"))
+                .body("path", equalTo("/characters/DoesNotExist"));
+    }
+
+    @Test
+    void requestIdIsEchoed() {
+        given()
+                .header("X-Request-ID", "test-req-1")
+                .when()
+                .get("/characters")
+                .then()
+                .statusCode(200)
+                .header("X-Request-ID", "test-req-1");
+    }
+
+    @Test
+    void healthReadyIncludesWorldStorage() {
+        given().when().get("/q/health/ready").then().statusCode(200);
+        given().when().get("/q/health/live").then().statusCode(200);
+    }
+
+    @Test
+    void createIsIdempotentWithKey() {
+        String name = unique("Idem");
+        String key = UUID.randomUUID().toString();
+        given()
+                .header("Idempotency-Key", key)
+                .when()
+                .post("/create_new_character/{name}/{class}", name, "mage")
+                .then()
+                .statusCode(201);
+        given()
+                .header("Idempotency-Key", key)
+                .when()
+                .post("/create_new_character/{name}/{class}", name, "mage")
+                .then()
+                .statusCode(201)
+                .body("message", equalTo("successful creation"));
+    }
+
+    @Test
+    void createRejectsUnsafeName() {
+        given()
+                .when()
+                .post("/create_new_character/{name}/{class}", "<script>", "mage")
+                .then()
+                .statusCode(400)
+                .body("errorCode", equalTo("BAD_REQUEST"));
     }
 
     @Test

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ChatReply, LlmConfig, RemoteChatPreview, RemoteChatThread, WorldEntity } from './models';
+import { newIdempotencyKey } from './request-id';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
@@ -18,7 +19,8 @@ export class ApiService {
   createCharacter(name: string, characterClass: string): Observable<{ message: string }> {
     return this.http.post<{ message: string }>(
       `/create_new_character/${encodeURIComponent(name)}/${encodeURIComponent(characterClass)}`,
-      {}
+      {},
+      { headers: { 'Idempotency-Key': newIdempotencyKey() } }
     );
   }
 
@@ -37,7 +39,8 @@ export class ApiService {
   createPersona(name: string, characterClass: string): Observable<{ message: string }> {
     return this.http.post<{ message: string }>(
       `/create_new_persona/${encodeURIComponent(name)}/${encodeURIComponent(characterClass)}`,
-      {}
+      {},
+      { headers: { 'Idempotency-Key': newIdempotencyKey() } }
     );
   }
 

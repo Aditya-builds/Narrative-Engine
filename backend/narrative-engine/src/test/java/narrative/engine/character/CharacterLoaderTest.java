@@ -53,6 +53,8 @@ class CharacterLoaderTest {
         assertThrows(InvalidCharacterRequestException.class, () -> loader.resolveKey("../secret"));
         assertThrows(InvalidCharacterRequestException.class, () -> loader.resolveKey("a/b"));
         assertThrows(InvalidCharacterRequestException.class, () -> loader.resolveKey("a\\b"));
+        assertThrows(InvalidCharacterRequestException.class, () -> loader.resolveKey("<script>"));
+        assertThrows(InvalidCharacterRequestException.class, () -> loader.resolveKey("a>b"));
     }
 
     @Test

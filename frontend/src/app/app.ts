@@ -2,6 +2,7 @@ import { Component, HostListener, inject, signal } from '@angular/core';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { filter, map, startWith } from 'rxjs/operators';
+import { ToastService } from './toast.service';
 
 @Component({
   selector: 'app-root',
@@ -11,6 +12,7 @@ import { filter, map, startWith } from 'rxjs/operators';
 })
 export class App {
   private readonly router = inject(Router);
+  readonly toast = inject(ToastService);
   readonly profileOpen = signal(false);
   readonly query = signal('');
 

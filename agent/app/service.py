@@ -1,4 +1,5 @@
 import logging
+import time
 import uuid
 
 from fastapi import BackgroundTasks, HTTPException
@@ -6,9 +7,10 @@ from langchain_core.messages import HumanMessage
 
 from app.errors import http_error_from_exception
 from app.schemas import ChatRequest, ChatResponse
-from graph.model import reset_api_key, resolved_api_key, use_api_key
+from graph.model import mock_llm_enabled, reset_api_key, resolved_api_key, use_api_key
 from graph.summary import pending_summary_messages, run_summary_maintenance
 from memory import load_conversation, messages_from_json, save_conversation
+from metrics import record_chat
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +36,7 @@ def run_chat(
     token = use_api_key(openai_api_key)
     try:
         api_key = resolved_api_key()
-        if not api_key:
+        if not api_key and not mock_llm_enabled():
             raise HTTPException(status_code=401, detail=MISSING_API_KEY_DETAIL)
 
         thread_id = request.conversation_id or str(uuid.uuid4())
@@ -45,6 +47,7 @@ def run_chat(
             raise HTTPException(status_code=503, detail="Could not load this chat's memory.") from exc
 
         try:
+            started = time.perf_counter()
             result = graph.invoke(
                 {
                     "conversation_id": thread_id,
@@ -58,6 +61,7 @@ def run_chat(
                     "llm_calls_this_turn": 0,
                 }
             )
+            record_chat(time.perf_counter() - started)
         except HTTPException:
             raise
         except Exception as exc:

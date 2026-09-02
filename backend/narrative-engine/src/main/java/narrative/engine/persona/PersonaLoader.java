@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import narrative.engine.world.EntityStore;
+import narrative.engine.world.JsonFiles;
 import narrative.engine.world.Portraits;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
@@ -156,7 +157,10 @@ public class PersonaLoader implements EntityStore {
                 || personaKey.isBlank()
                 || personaKey.contains("..")
                 || personaKey.indexOf('/') >= 0
-                || personaKey.indexOf('\\') >= 0) {
+                || personaKey.indexOf('\\') >= 0
+                || personaKey.indexOf('<') >= 0
+                || personaKey.indexOf('>') >= 0
+                || personaKey.indexOf('"') >= 0) {
             throw new InvalidPersonaRequestException("Invalid persona key");
         }
     }
@@ -205,6 +209,6 @@ public class PersonaLoader implements EntityStore {
     }
 
     private void writeJson(Path file, JsonNode node) throws IOException {
-        objectMapper.writerWithDefaultPrettyPrinter().writeValue(file.toFile(), node);
+        JsonFiles.writeAtomic(objectMapper, file, node);
     }
 }

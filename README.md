@@ -34,7 +34,19 @@ Same JSON shape as characters. Files are stored under `World/Persona/`.
 | POST | `/create_new_persona/{name}/{class}` | Create folder and JSON files from mage or melee defaults under `World/Persona/` |
 | PUT | `/update_persona/{name}` | Merge fields into existing persona JSON |
 
-Authoring notes for the JSON files are in [NOTES.md](NOTES.md).
+Authoring notes for the JSON files are in [NOTES.md](NOTES.md). Errors from both APIs use `{ timestamp, path, status, errorCode, message }` and still include `error` / `detail` so existing clients keep working. Send `X-Request-ID` to correlate a UI click across Angular, Quarkus, and the agent. Create endpoints honor `Idempotency-Key`.
+
+## Local development
+
+From the repo root, start Quarkus (`:8080`), the agent (`:8000`), and Angular (`:4200`):
+
+```powershell
+.\start-dev.ps1
+```
+
+On macOS/Linux: `./start-dev.sh`. Open `http://localhost:4200`. Architecture notes live in [docs/adr](docs/adr/README.md).
+
+Health: Quarkus `http://localhost:8080/q/health`, agent `http://localhost:8000/health` (readiness at `/health/ready`). Set `ENABLE_MOCK_LLM=true` in `agent/.env` to chat without OpenAI credits.
 
 ## Frontend
 
