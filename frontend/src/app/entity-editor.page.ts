@@ -32,9 +32,12 @@ export class EntityEditorPage implements OnInit {
   }
 
   get backLink(): string[] {
-    return this.kind() === 'persona'
+    if (this.kind() !== 'persona') {
+      return ['/'];
+    }
+    return this.characterName()
       ? ['/characters', this.characterName(), 'personas']
-      : ['/'];
+      : ['/personas'];
   }
 
   onNameChange(): void {
@@ -73,7 +76,9 @@ export class EntityEditorPage implements OnInit {
       next: () => {
         this.busy.set(false);
         if (this.kind() === 'persona') {
-          void this.router.navigate(['/characters', this.characterName(), 'personas']);
+          void this.router.navigate(
+            this.characterName() ? ['/characters', this.characterName(), 'personas'] : ['/personas']
+          );
         } else {
           void this.router.navigate(['/characters', name, 'personas']);
         }

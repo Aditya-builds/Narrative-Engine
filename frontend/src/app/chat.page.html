@@ -1,6 +1,6 @@
 <div class="im">
   <header class="im-top">
-    <a class="im-icon-btn" [routerLink]="['/characters', character()?.name, 'personas']" aria-label="Back">
+    <a class="im-icon-btn" routerLink="/" aria-label="Home">
       ←
     </a>
     <div class="im-peer">
@@ -12,13 +12,16 @@
         <small>{{ character()?.class }} · rank {{ character()?.rank || '?' }}</small>
       </div>
     </div>
-    <button type="button" class="im-icon-btn" (click)="showProfile.set(!showProfile())" aria-label="Profile">
+    <button type="button" class="im-icon-btn" (click)="showInfo.set(!showInfo())" aria-label="Character info">
       i
     </button>
   </header>
 
   @if (error()) {
-    <p class="banner im-banner">{{ error() }}</p>
+    <p class="banner im-banner">
+      <span>{{ error() }}</span>
+      <button type="button" class="im-icon-btn" (click)="error.set('')" aria-label="Dismiss">×</button>
+    </p>
   }
 
   <div class="im-thread" #thread>
@@ -29,7 +32,7 @@
           <app-portrait class="im-avatar" kind="character" [name]="message.name" size="avatar" />
         }
         <div class="im-bubble" [class.im-bubble-mine]="message.speaker === 'persona'">
-          <p>{{ message.text }}</p>
+          <p>{{ message.text }}@if (typing() && $last && message.speaker === 'character') {<span class="im-caret"></span>}</p>
           <time>{{ clock(message.at) }}</time>
         </div>
         @if (message.speaker === 'persona') {
@@ -37,9 +40,40 @@
         }
       </div>
     }
+    @if (waiting()) {
+      <div class="im-row">
+        @if (character()?.name; as name) {
+          <app-portrait class="im-avatar" kind="character" [name]="name" size="avatar" />
+        }
+        <div class="im-bubble im-bubble-pending">
+          <p>{{ character()?.name || 'Character' }} is thinking<span class="im-dots"></span></p>
+        </div>
+      </div>
+    }
   </div>
 
-  <form class="im-dock" (ngSubmit)="send()">
+  <div class="im-composer">
+    <div class="im-length" role="group" aria-label="Reply length">
+      <span>Reply</span>
+      @for (size of replySizes; track size) {
+        <button type="button" [class.on]="replyLength === size" (click)="setReplyLength(size)">
+          {{ size }}
+        </button>
+      }
+    </div>
+    <form class="im-dock" (ngSubmit)="send()">
+    <button
+      type="button"
+      class="im-you"
+      [class.im-you-locked]="started()"
+      [disabled]="!canSwitchPersona()"
+      (click)="openPersonaPicker()"
+      [attr.aria-label]="started() ? 'Persona locked' : 'Chat as ' + (persona()?.name || 'persona')">
+      @if (persona()?.name; as name) {
+        <app-portrait kind="persona" [name]="name" size="avatar" />
+      }
+      <span>{{ persona()?.name || 'You' }}</span>
+    </button>
     <textarea
       name="draft"
       rows="1"
@@ -47,16 +81,17 @@
       (keydown)="onComposerKey($event)"
       [placeholder]="'Message as ' + (persona()?.name || 'you')"
     ></textarea>
-    <button type="submit" class="im-send" [disabled]="!draft.trim()">Send</button>
-  </form>
+      <button type="submit" class="im-send" [disabled]="busy() || !draft.trim()">Send</button>
+    </form>
+  </div>
 </div>
 
-@if (showProfile()) {
-  <div class="im-sheet-mask" (click)="showProfile.set(false)"></div>
+@if (showInfo()) {
+  <div class="im-sheet-mask" (click)="showInfo.set(false)"></div>
   <aside class="im-sheet">
     <header>
       <h2>{{ character()?.name }}</h2>
-      <button type="button" class="im-icon-btn" (click)="showProfile.set(false)">×</button>
+      <button type="button" class="im-icon-btn" (click)="showInfo.set(false)">×</button>
     </header>
     @if (character()?.name; as name) {
       <app-portrait kind="character" [name]="name" size="detail" />
@@ -71,5 +106,31 @@
       <textarea rows="6" [(ngModel)]="personaNotes"></textarea>
     </label>
     <button type="button" class="btn primary" [disabled]="busy()" (click)="saveNotes()">Save</button>
+  </aside>
+}
+
+@if (showPersonas()) {
+  <div class="im-sheet-mask" (click)="showPersonas.set(false)"></div>
+  <aside class="im-persona-sheet">
+    <header>
+      <h2>Chat as</h2>
+      <button type="button" class="im-icon-btn" (click)="showPersonas.set(false)">×</button>
+    </header>
+    <p class="lede">Switch before you send the first message. After that, this chat stays locked to one persona.</p>
+    <div class="im-persona-list">
+      @for (option of personas(); track option.name) {
+        <button
+          type="button"
+          class="im-persona-choice"
+          [class.im-persona-choice-on]="option.name === persona()?.name"
+          (click)="pickPersona(option)">
+          <app-portrait kind="persona" [name]="option.name" size="avatar" />
+          <span>
+            <strong>{{ option.name }}</strong>
+            <small>{{ option.class }} · rank {{ option.rank || '?' }}</small>
+          </span>
+        </button>
+      }
+    </div>
   </aside>
 }

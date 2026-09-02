@@ -1,11 +1,9 @@
 <section class="page">
-  <div class="page-head">
-    <div class="page-copy">
-      <p class="eyebrow">Step 1</p>
-      <h1>Who will you speak with?</h1>
-      <p class="lede">Hover a character to learn more, then click to talk. Create a new one anytime.</p>
+  <div class="browse-bar">
+    <div class="chats-tabs">
+      <span class="on">Characters</span>
     </div>
-    <a class="btn primary" routerLink="/characters/new">Create character</a>
+    <p class="browse-count">{{ visible().length }} characters</p>
   </div>
 
   @if (error()) {
@@ -13,7 +11,7 @@
   }
 
   <div class="cast-grid">
-    @for (character of characters(); track character.name) {
+    @for (character of visible(); track character.name) {
       <app-entity-card
         kind="character"
         [entity]="character"

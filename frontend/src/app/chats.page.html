@@ -1,0 +1,45 @@
+<section class="page">
+  <div class="chats-head">
+    <p class="chats-count">{{ chats().length }} characters {{ chats().length }} chats</p>
+    <div class="chats-toolbar">
+      <div class="chats-tabs">
+        <span class="on">Chats</span>
+      </div>
+      <span class="chats-sort">Latest</span>
+    </div>
+  </div>
+
+  @if (chats().length === 0) {
+    <p class="lede">No chats yet. Pick a character from Home to start one.</p>
+  } @else {
+    <div class="chat-list">
+      @for (chat of chats(); track chat.character) {
+        <div class="chat-card" [class.chat-card-menu-open]="menuFor() === chat.character">
+          <button type="button" class="chat-card-main" (click)="open(chat)">
+            <app-portrait kind="character" [name]="chat.character" size="thumb" />
+            <span class="chat-card-copy">
+              <strong>{{ chat.character }}</strong>
+              <small>chats: 1 · as {{ chat.personaName }}</small>
+            </span>
+          </button>
+          <div class="chat-card-actions">
+            <button
+              type="button"
+              class="chat-card-chevron"
+              [attr.aria-label]="'Chat options for ' + chat.character"
+              (click)="toggleMenu(chat, $event)">
+              ▾
+            </button>
+            @if (menuFor() === chat.character) {
+              <div class="chat-card-menu" (click)="$event.stopPropagation()">
+                <button type="button" class="chat-card-delete" (click)="remove(chat, $event)">
+                  Delete chat
+                </button>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+</section>

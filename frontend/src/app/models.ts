@@ -1,3 +1,5 @@
+export type ReplyLength = 'short' | 'medium' | 'long';
+
 export interface WorldEntity {
   name: string;
   class?: string;
@@ -15,4 +17,10 @@ export interface ChatMessage {
   name: string;
   text: string;
   at: Date;
+}
+
+export interface ChatReply {
+  response: string;
+  conversation_id: string;
+  applied_state_changes?: string[];
 }

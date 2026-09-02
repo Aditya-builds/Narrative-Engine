@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { WorldEntity } from './models';
+import { ChatReply, WorldEntity } from './models';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
@@ -43,5 +43,19 @@ export class ApiService {
 
   updatePersona(name: string, body: Record<string, unknown>): Observable<{ message: string }> {
     return this.http.put<{ message: string }>(`/update_persona/${encodeURIComponent(name)}`, body);
+  }
+
+  sendChat(body: {
+    message: string;
+    character: string;
+    persona: string;
+    conversation_id?: string;
+    reply_length?: 'short' | 'medium' | 'long';
+  }): Observable<ChatReply> {
+    return this.http.post<ChatReply>('/chat', body);
+  }
+
+  deleteConversation(conversationId: string): Observable<void> {
+    return this.http.delete<void>(`/conversations/${encodeURIComponent(conversationId)}`);
   }
 }

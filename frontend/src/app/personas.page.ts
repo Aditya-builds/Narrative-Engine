@@ -3,6 +3,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { ApiService } from './api.service';
+import { ChatStore } from './chat-store';
 import { EntityCardComponent } from './entity-card';
 import { WorldEntity } from './models';
 
@@ -13,17 +14,20 @@ import { WorldEntity } from './models';
 })
 export class PersonasPage implements OnInit {
   private readonly api = inject(ApiService);
+  private readonly store = inject(ChatStore);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
   readonly characterName = signal('');
   readonly character = signal<WorldEntity | null>(null);
   readonly personas = signal<WorldEntity[]>([]);
+  readonly resumePersona = signal('');
   readonly error = signal('');
 
   ngOnInit(): void {
     const name = this.route.snapshot.paramMap.get('characterName') ?? '';
     this.characterName.set(name);
+    this.resumePersona.set(this.store.latestPersona(name));
     this.api.getCharacter(name).subscribe({
       next: (loaded) => this.character.set(loaded),
       error: () => this.error.set(`Could not load character ${name}.`)
@@ -35,13 +39,25 @@ export class PersonasPage implements OnInit {
   }
 
   enterChat(persona: WorldEntity): void {
+    const locked = this.resumePersona();
+    if (locked && persona.name !== locked) {
+      return;
+    }
     void this.router.navigate([
       '/characters',
       this.characterName(),
       'personas',
-      persona.name,
+      locked || persona.name,
       'chat'
     ]);
+  }
+
+  cardAction(persona: WorldEntity): string {
+    const locked = this.resumePersona();
+    if (!locked) {
+      return `Enter chat as ${persona.name}`;
+    }
+    return persona.name === locked ? `Continue chat as ${persona.name}` : `Locked to ${locked}`;
   }
 
   private loadEntities(names: string[]): void {

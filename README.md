@@ -48,4 +48,19 @@ cd frontend
 npm.cmd start
 ```
 
-Open `http://localhost:4200`. The UI proxies API calls to `http://localhost:8080` and uses GET to load, POST to create, and PUT to save description edits.
+Open `http://localhost:4200`. The UI proxies world APIs to `http://localhost:8080` and chat to the Python agent at `http://localhost:8000`.
+
+## Agent
+
+The FastAPI + LangGraph service in `agent` turns chat into an OpenAI reply and may call Quarkus tools to update Character/Persona JSON.
+
+```powershell
+cd agent
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+copy .env.example .env
+uvicorn app:app --reload --port 8000
+```
+
+Set `OPENAI_API_KEY` in `agent/.env`. Keep Quarkus running on port 8080.

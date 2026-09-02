@@ -5,11 +5,22 @@
       <h1>Who are you in this story?</h1>
       <p class="lede">
         You are about to speak with <strong>{{ character()?.name || characterName() }}</strong>.
-        Hover a persona to learn more, then click to enter chat.
+        @if (resumePersona()) {
+          This chat already started as <strong>{{ resumePersona() }}</strong>, so the persona is locked.
+        } @else {
+          Pick who you are, then click to enter chat. You can still switch before the first message.
+        }
       </p>
       <a class="back" routerLink="/">Back to characters</a>
     </div>
-    <a class="btn primary" [routerLink]="['/characters', characterName(), 'personas', 'new']">Create persona</a>
+    <div class="page-actions">
+      @if (resumePersona()) {
+        <a class="btn primary" [routerLink]="['/characters', characterName(), 'personas', resumePersona(), 'chat']">
+          Continue chat as {{ resumePersona() }}
+        </a>
+      }
+      <a class="btn" [routerLink]="['/characters', characterName(), 'personas', 'new']">Create persona</a>
+    </div>
   </div>
 
   @if (error()) {
@@ -21,7 +32,7 @@
       <app-entity-card
         kind="persona"
         [entity]="persona"
-        actionLabel="Enter chat as {{ persona.name }}"
+        [actionLabel]="cardAction(persona)"
         (choose)="enterChat($event)" />
     }
   </div>
