@@ -11,6 +11,13 @@ import { ChatStore } from './chat-store';
       <h1>You</h1>
       <p class="lede">Jump back to your characters, personas, or saved chats.</p>
       <div class="chat-list">
+        <a class="chat-card" routerLink="/api-key">
+          <span class="chat-card-copy">
+            <strong>OpenAI API key</strong>
+            <small>Required before chatting. Stored in this browser tab only.</small>
+          </span>
+          <span class="chat-card-chevron">›</span>
+        </a>
         <a class="chat-card" routerLink="/">
           <span class="chat-card-copy">
             <strong>My Characters</strong>

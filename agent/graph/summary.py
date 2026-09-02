@@ -30,11 +30,21 @@ def pending_summary_messages(state: dict, keep: int = KEEP_RECENT, after: int = 
     return older[:SUMMARY_BATCH]
 
 
-def run_summary_maintenance(conversation_id: str) -> None:
+def run_summary_maintenance(conversation_id: str, api_key: str | None = None) -> None:
     """Load stored history, fold older turns into the summary, persist the result.
 
     Safe to run after the HTTP response has been sent.
     """
+    from graph.model import reset_api_key, use_api_key
+
+    token = use_api_key(api_key)
+    try:
+        _run_summary_maintenance(conversation_id)
+    finally:
+        reset_api_key(token)
+
+
+def _run_summary_maintenance(conversation_id: str) -> None:
     from memory import apply_summary_update, load_conversation, messages_from_json
 
     stored = load_conversation(conversation_id)
